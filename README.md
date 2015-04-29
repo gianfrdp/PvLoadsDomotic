@@ -9,5 +9,5 @@ It's based on 123solar 1.5.5 version for Production reading and can use differen
 - measureit (https://code.google.com/p/measureit/)
 - a modified version for Arduino Solar Meter (https://solarmeter.codeplex.com/)
 
-It uses WebIOPi to control GPIO (https://code.google.com/p/webiopi/), Redis (http://redis.io/) to store relays statues with PHP binding (https://github.com/nicolasff/phpredis.git)
+It uses WebIOPi to control GPIO (https://code.google.com/p/webiopi/), Redis (http://redis.io/) to store relays statues with PHP binding (https://github.com/nicolasff/phpredis)
  
