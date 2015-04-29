@@ -1,0 +1,20 @@
+--- phpredis/debian.control	2015-04-29 11:16:56.616877370 +0200
++++ phpredis-2.2.7/debian.control	2015-04-29 11:46:20.745294953 +0200
+@@ -4,7 +4,7 @@
+ Priority: optional
+ Architecture: all
+ Essential: no
+-Depends: 
++Depends: redis-server, php5
+ Pre-Depends: 
+ Recommends: php5
+ Suggests: 
+--- phpredis/mkdeb.sh	2015-04-29 11:16:56.626877021 +0200
++++ phpredis-2.2.7/mkdeb.sh	2015-04-29 12:07:30.071059566 +0200
+@@ -17,5 +17,5 @@
+ echo "extension=redis.so" >> debian/etc/php5/conf.d/redis.ini
+ 
+ cp modules/redis.so debian/$DIR
+-dpkg -b debian phpredis-`git describe --abbrev=0 --tags`_`uname -m`.deb
++dpkg -b debian ../phpredis-`git describe --abbrev=0 --tags`-1_`dpkg --print-architecture`.deb
+ rm -rf debian/

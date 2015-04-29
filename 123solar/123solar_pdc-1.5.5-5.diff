@@ -101,6 +101,72 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/js_loads.php 123solar_pdc-1.5.5-5/j
 +
 +};
 +
+diff -u -N -r -X diff_exclude 123solar-1.5.5/languages/Czech.php 123solar_pdc-1.5.5-5/languages/Czech.php
+--- 123solar-1.5.5/languages/Czech.php	2013-09-30 10:57:27.000000000 +0200
++++ 123solar_pdc-1.5.5-5/languages/Czech.php	2015-04-29 11:37:56.000000000 +0200
+@@ -7,6 +7,7 @@
+ $lgMPRODUCTION="Vyrobeno";
+ $lgMCOMPARISON="Porovnání";
+ $lgMINFO="Informace";
++$lgMRELAIS="Relais";
+ 
+ // ### FRONT PAGE
+ $lgPOWERPLANT="Elektrárna";
+diff -u -N -r -X diff_exclude 123solar-1.5.5/languages/Deutsch.php 123solar_pdc-1.5.5-5/languages/Deutsch.php
+--- 123solar-1.5.5/languages/Deutsch.php	2013-09-30 10:56:23.000000000 +0200
++++ 123solar_pdc-1.5.5-5/languages/Deutsch.php	2015-04-29 11:38:26.000000000 +0200
+@@ -7,6 +7,7 @@
+ $lgMPRODUCTION="Ertrag";
+ $lgMCOMPARISON="Vergleich";
+ $lgMINFO="Infos";
++$lgMRELAIS="Relais";
+ 
+ // ### FRONT PAGE
+ $lgPOWERPLANT="Kraftwerk";
+diff -u -N -r -X diff_exclude 123solar-1.5.5/languages/English.php 123solar_pdc-1.5.5-5/languages/English.php
+--- 123solar-1.5.5/languages/English.php	2013-09-30 10:54:17.000000000 +0200
++++ 123solar_pdc-1.5.5-5/languages/English.php	2015-04-29 11:37:47.000000000 +0200
+@@ -7,6 +7,7 @@
+ $lgMPRODUCTION="Production";
+ $lgMCOMPARISON="Comparison";
+ $lgMINFO="Infos";
++$lgMRELAIS="Relais";
+ 
+ // ### FRONT PAGE
+ $lgPOWERPLANT="Power plant";
+diff -u -N -r -X diff_exclude 123solar-1.5.5/languages/Français.php 123solar_pdc-1.5.5-5/languages/Français.php
+--- 123solar-1.5.5/languages/Français.php	2013-09-30 10:53:42.000000000 +0200
++++ 123solar_pdc-1.5.5-5/languages/Français.php	2015-04-29 11:38:34.000000000 +0200
+@@ -7,6 +7,7 @@
+ $lgMPRODUCTION="Production";
+ $lgMCOMPARISON="Comparaison";
+ $lgMINFO="Infos";
++$lgMRELAIS="Relais";
+ 
+ // ### FRONT PAGE
+ $lgPOWERPLANT="Centrale";
+diff -u -N -r -X diff_exclude 123solar-1.5.5/languages/Italiano.php 123solar_pdc-1.5.5-5/languages/Italiano.php
+--- 123solar-1.5.5/languages/Italiano.php	2013-09-30 10:58:41.000000000 +0200
++++ 123solar_pdc-1.5.5-5/languages/Italiano.php	2015-04-29 11:38:45.000000000 +0200
+@@ -7,6 +7,7 @@
+ $lgMPRODUCTION="Storico Produzione";
+ $lgMCOMPARISON="Confronto";
+ $lgMINFO="Informazioni";
++$lgMRELAIS="Rel�";
+ 
+ // ### FRONT PAGE
+ $lgPOWERPLANT="Centrale elettrica";
+diff -u -N -r -X diff_exclude 123solar-1.5.5/languages/Nederlands.php 123solar_pdc-1.5.5-5/languages/Nederlands.php
+--- 123solar-1.5.5/languages/Nederlands.php	2013-09-30 10:59:11.000000000 +0200
++++ 123solar_pdc-1.5.5-5/languages/Nederlands.php	2015-04-29 11:38:53.000000000 +0200
+@@ -7,6 +7,7 @@
+ $lgMPRODUCTION="Productie";
+ $lgMCOMPARISON="Vergelijking";
+ $lgMINFO="Infos";
++$lgMRELAIS="Relais";
+ 
+ // ### FRONT PAGE
+ $lgPOWERPLANT="Energiecentrale";
 diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/change_loads.php 123solar_pdc-1.5.5-5/programs/change_loads.php
 --- 123solar-1.5.5/programs/change_loads.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/programs/change_loads.php	2015-04-23 14:25:40.000000000 +0200
@@ -1532,3 +1598,91 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/read_maincfg.php 123solar_p
 +$METER_SENSOR=$main_cfgarray[21];
 +$LOADS_LABEL=preg_split("/,/",$main_cfgarray[22]);
  ?>
+diff -u -N -r -X diff_exclude 123solar-1.5.5/styles/personal/css/style.css 123solar_pdc-1.5.5-5/styles/personal/css/style.css
+--- 123solar-1.5.5/styles/personal/css/style.css	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/styles/personal/css/style.css	2015-04-29 11:34:44.000000000 +0200
+@@ -0,0 +1,41 @@
++body {
++  font-family: "Ubuntu Beta", "Bitstream Vera Sans", DejaVu Sans, Tahoma, sans-serif;
++  color: #333;
++  background-color:#d3dae2;
++  margin-left: 0px;
++  margin-top: 5px;
++  margin-right: 0px;
++  margin-bottom: 0px;
++  padding: 0px;
++}
++
++       A:link {
++font-family: "Ubuntu Beta", "Bitstream Vera Sans", DejaVu Sans, Tahoma, sans-serif;
++color: #000000;              
++      }
++
++        A:visited {
++text-decoration: underline;
++color: #000000;
++                }
++
++        A:active {
++color: #000000;
++text-decoration: underline;
++background-color: #CCCC66
++                }
++
++        A:hover {
++text-decoration: underline;
++color: #000000;
++background-color: #CCCC66;
++                }
++
++.photo {
++float: left;
++margin: 0.5em;
++border: 1px solid #ccc;
++padding: 1em;
++font-size: 10px;
++box-shadow:2px 2px 3px rgba(0,0,0,0.2);
++}
+diff -u -N -r -X diff_exclude 123solar-1.5.5/styles/personal/footer.php 123solar_pdc-1.5.5-5/styles/personal/footer.php
+--- 123solar-1.5.5/styles/personal/footer.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/styles/personal/footer.php	2015-04-29 11:34:44.000000000 +0200
+@@ -0,0 +1,4 @@
++          <!-- #EndEditable -->
++<p align=left><?php include("styles/selectstyles.php");?></p>
++</body>
++</html>
+diff -u -N -r -X diff_exclude 123solar-1.5.5/styles/personal/header.php 123solar_pdc-1.5.5-5/styles/personal/header.php
+--- 123solar-1.5.5/styles/personal/header.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/styles/personal/header.php	2015-04-29 11:36:36.000000000 +0200
+@@ -0,0 +1,10 @@
++<body>
++<p align="center"><b><?php echo "$TITLE";?></b>&nbsp;<font size="-1">(<?php echo "$SUBTITLE";?>)</font></p>
++<hr size=1 width="100%">
++<table width="100%" border="0" cellpadding="0" cellspacing="0">
++<tr>
++<td align="left"><a href="index.php"><?php echo "$lgMINDEX";?></a> | <a href="indexdetailed.php"><?php echo "$lgMDETAILED";?></a> | <a href="indexproduction.php"><?php echo "$lgMPRODUCTION";?></a> |  <a href="indexcomparison.php"><?php echo "$lgMCOMPARISON";?></a> | <a href="indexinfo.php"><?php echo "$lgMINFO";?></a> | <a href="relays.php"><?php echo "$lgMRELAIS";?></a></td>
++<td align="right"><?php include("styles/selectlanguages.php");?></td>
++</tr>
++</table>
++<!-- #BeginEditable "mainbox" -->
+diff -u -N -r -X diff_exclude 123solar-1.5.5/styles/personal/header_multi.php 123solar_pdc-1.5.5-5/styles/personal/header_multi.php
+--- 123solar-1.5.5/styles/personal/header_multi.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/styles/personal/header_multi.php	2015-04-29 11:36:25.000000000 +0200
+@@ -0,0 +1,17 @@
++<body>
++<p align="center"><b><?php echo "$TITLE";?></b>&nbsp;<font size="-1">(<?php echo "$SUBTITLE";?>)</font></p>
++<hr size=1 width="100%">
++<table width="100%" border="0" cellpadding="0" cellspacing="0">
++<tr>
++<td align="left">
++<a href="index.php"><?php echo "$lgMINDEX";?></a> |
++<?php
++for ($i=1;$i<=$NUMINV;$i++) {
++echo "<a href='index_mono.php?invtnum=$i'>$lgINVT$i</a> |";
++}
++?>
++<a href="indexdetailed.php"><?php echo "$lgMDETAILED";?></a> | <a href="indexproduction.php"><?php echo "$lgMPRODUCTION";?></a> |  <a href="indexcomparison.php"><?php echo "$lgMCOMPARISON";?></a> | <a href="indexinfo.php"><?php echo "$lgMINFO";?> </a> | <a href="relays.php"><?php echo "$lgMRELAIS";?></a></td>
++<td align="right"><?php include("styles/selectlanguages.php");?></td>
++</tr>
++</table>
++<!-- #BeginEditable "mainbox" -->
