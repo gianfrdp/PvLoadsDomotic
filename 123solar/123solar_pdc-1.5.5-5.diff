@@ -1,0 +1,1534 @@
+diff -u -N -r -X diff_exclude 123solar-1.5.5/config/admin_main.php 123solar_pdc-1.5.5-5/config/admin_main.php
+--- 123solar-1.5.5/config/admin_main.php	2013-07-29 13:06:47.000000000 +0200
++++ 123solar_pdc-1.5.5-5/config/admin_main.php	2015-04-23 14:35:32.000000000 +0200
+@@ -79,6 +79,8 @@
+ // ### CLEANUP
+ \$KEEPDDAYS=$KEEPDDAYS2;
+ \$AMOUNTLOG=$AMOUNTLOG2;
++
++include(\"config_main_loads.php\");
+ ?>
+ ";
+ fwrite($fh, $stringData);
+diff -u -N -r -X diff_exclude 123solar-1.5.5/config/config_main.php 123solar_pdc-1.5.5-5/config/config_main.php
+--- 123solar-1.5.5/config/config_main.php	2013-10-07 10:43:50.000000000 +0200
++++ 123solar_pdc-1.5.5-5/config/config_main.php	2015-04-23 14:34:26.000000000 +0200
+@@ -20,4 +20,6 @@
+ // ### CLEANUP
+ $KEEPDDAYS=0;
+ $AMOUNTLOG=2500;
++
++include("config_main_loads.php");
+ ?>
+diff -u -N -r -X diff_exclude 123solar-1.5.5/config/config_main_loads.php 123solar_pdc-1.5.5-5/config/config_main_loads.php
+--- 123solar-1.5.5/config/config_main_loads.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/config/config_main_loads.php	2015-04-29 09:59:52.000000000 +0200
+@@ -0,0 +1,21 @@
++<?php
++
++# LOADS
++$RELAY_URL = 'http://127.0.0.1:8000/relay/';
++$LOADS_LIM = '2500';
++$LOADS_HIS = '500';
++$LOADS_MIN = '30';
++$LOADS_LABEL = 'PDC';
++
++//$METER_URL = 'http://192.168.2.18:555';
++//$METER_URL = 'http://127.0.0.1/php/measureit_functions.php?do=summary_start';
++$METER_URL = 'http://127.0.0.1/metern/programs/meter.php';
++
++//$METER_TYPE = 'arduino';
++//$METER_TYPE = 'measureit';
++$METER_TYPE = 'metern';
++
++//$METER_SENSOR = '0';
++$METER_SENSOR = 'PDC1';
++
++?>
+diff -u -N -r -X diff_exclude 123solar-1.5.5/config/loadcfg.php 123solar_pdc-1.5.5-5/config/loadcfg.php
+--- 123solar-1.5.5/config/loadcfg.php	2013-09-17 20:25:34.000000000 +0200
++++ 123solar_pdc-1.5.5-5/config/loadcfg.php	2015-04-23 14:25:24.000000000 +0200
+@@ -65,7 +65,7 @@
+     shmop_delete($shmid);
+     shmop_close($shmid);
+ }
+-$data  = "$NUMINV;$NUMSMA;$AUTOMODE;$DISTRO;$DTZ;$LATITUDE;$LONGITUDE;$DATEFORMAT;$DPOINT;$THSEP;$TITLE;$SUBTITLE;$KEEPDDAYS;$AMOUNTLOG;$SCRDIR";  
++$data  = "$NUMINV;$NUMSMA;$AUTOMODE;$DISTRO;$DTZ;$LATITUDE;$LONGITUDE;$DATEFORMAT;$DPOINT;$THSEP;$TITLE;$SUBTITLE;$KEEPDDAYS;$AMOUNTLOG;$SCRDIR;$RELAY_URL;$LOADS_LIM;$LOADS_HIS;$LOADS_MIN;$METER_URL;$METER_TYPE;$METER_SENSOR;$LOADS_LABEL";
+ $shmid = shmop_open($systemid, 'c', 0666, 1024);
+ shmop_write($shmid, $data, 0);
+ shmop_close($shmid);
+diff -u -N -r -X diff_exclude 123solar-1.5.5/js_loads.php 123solar_pdc-1.5.5-5/js_loads.php
+--- 123solar-1.5.5/js_loads.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/js_loads.php	2015-04-23 14:25:40.000000000 +0200
+@@ -0,0 +1,40 @@
++//Call the getLoadsVal() function every 1/2 minutes
++setInterval("getLoadsVal()",1000 * 30 * 1);
++
++function loadsOnOff(pin, id) {
++    console.log('loadsOnOff');
++    var url = 'programs/change_loads.php?pin=' + pin + '&id=' + id;
++	
++	$.ajax({
++		type: 'GET', /* GET or POST or PUT or DELETE verb */
++		url: url, /* Location of the service */
++		ContentType: 'application/json; charset=utf-8', /* content type sent to server */
++		dataType:  'json',
++		processdata: false /* True or False */
++	});
++	// Save status to DB (force on/off)
++
++    
++    getLoadsVal();
++}
++
++function getLoadsVal() {
++	$.getJSON("programs/read_loads.php", function(data) {
++	console.log("getLoadsVal data = " + data);
++        $.each(data, function(key, val) {
++			console.log("#RELAY" + key + " = " + val);
++			var values = val.split("/");
++			$("#RELAY" + key).html("&nbsp;" + values[0] + "&nbsp;");
++			$("#MODE" + key).html("&nbsp;" + values[1] + "&nbsp;");
++			if (values[0] == "ON") {
++				$("#RELAY" + key).css("background-color", "green");
++			} else  if (values[0] == "OFF") {
++				$("#RELAY" + key).css("background-color", "red");
++			} else {
++				$("#RELAY" + key).css("background-color", "yellow");
++			}
++		});
++    });
++
++};
++
+diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/change_loads.php 123solar_pdc-1.5.5-5/programs/change_loads.php
+--- 123solar-1.5.5/programs/change_loads.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/programs/change_loads.php	2015-04-23 14:25:40.000000000 +0200
+@@ -0,0 +1,15 @@
++<?php
++include('../scripts/read_maincfg.php');
++include_once('../scripts/loads.php');
++include_once('../scripts/loads_db.php');
++
++$pin = $_GET['pin'];
++$id = $_GET['id'];
++
++if ($id == STATUS_OFF || $id == STATUS_ON) {
++    change_load($RELAY_URL, $pin, $id);
++}
++
++save_status($pin, $id);
++
++?>
+\ No newline at end of file
+diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/meter_kw_status.php 123solar_pdc-1.5.5-5/programs/meter_kw_status.php
+--- 123solar-1.5.5/programs/meter_kw_status.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/programs/meter_kw_status.php	2015-04-23 14:25:40.000000000 +0200
+@@ -0,0 +1,7 @@
++<?php
++include('../scripts/read_maincfg.php');
++include_once('../scripts/meter.php');
++
++meter_kw_status($METER_URL);
++
++?>
+diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/meter_kwh_status.php 123solar_pdc-1.5.5-5/programs/meter_kwh_status.php
+--- 123solar-1.5.5/programs/meter_kwh_status.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/programs/meter_kwh_status.php	2015-04-23 14:25:40.000000000 +0200
+@@ -0,0 +1,6 @@
++<?php
++include('../scripts/read_maincfg.php');
++include_once('../scripts/meter.php');
++
++meter_kwh_status($METER_URL);
++?>
+diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/meter_status.php 123solar_pdc-1.5.5-5/programs/meter_status.php
+--- 123solar-1.5.5/programs/meter_status.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/programs/meter_status.php	2015-04-23 14:25:40.000000000 +0200
+@@ -0,0 +1,15 @@
++<?php
++include('../scripts/read_maincfg.php');
++include_once('../scripts/meter.php');
++
++$kw = read_meter_kw($METER_URL);
++$kwh = read_meter_kwh($METER_URL);
++
++$ret=array(
++    'KW' => (int) $kw,
++    'KWH' => (float) $kwh
++);
++
++header("Content-type: text/json");
++echo json_encode($ret)
++?>
+diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/programdashboard.php 123solar_pdc-1.5.5-5/programs/programdashboard.php
+--- 123solar-1.5.5/programs/programdashboard.php	2013-09-21 20:29:49.000000000 +0200
++++ 123solar_pdc-1.5.5-5/programs/programdashboard.php	2015-04-23 14:25:40.000000000 +0200
+@@ -7,7 +7,7 @@
+ $systemid = '1236' . $invtnum; // state
+ @$shmid = shmop_open($systemid, 'a', 0444, 256);
+ if (!empty($shmid)) {
+-    $state = shmop_read($shmid, 0, 256);
++    $state = trim(shmop_read($shmid, 0, 256));
+     shmop_close($shmid);
+ } else {
+     $state = '';
+@@ -27,7 +27,7 @@
+     $array= array(0,0,0,0,0);
+ }
+ 
+-$ret = array($state,$array[3],$array[4] );
++$ret = array($state,(float)$array[3],(float)$array[4] );
+ 
+ header("Content-type: text/json");  
+ echo json_encode($ret);
+diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/programmultiday.php 123solar_pdc-1.5.5-5/programs/programmultiday.php
+--- 123solar-1.5.5/programs/programmultiday.php	2013-09-30 09:35:38.000000000 +0200
++++ 123solar_pdc-1.5.5-5/programs/programmultiday.php	2015-04-23 14:25:40.000000000 +0200
+@@ -57,6 +57,7 @@
+             
+             $SDTE[$line_num] = $array[0];
+             $KWHT[$line_num] = $array[14];
++            $BKWHT[$invt_num][$line_num] = $KWHT[$line_num];
+             
+             if ($line_num == 1) {
+                 $pastline_num = 1;
+diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/read_loads.php 123solar_pdc-1.5.5-5/programs/read_loads.php
+--- 123solar-1.5.5/programs/read_loads.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/programs/read_loads.php	2015-04-23 14:25:40.000000000 +0200
+@@ -0,0 +1,12 @@
++<?php
++include('../scripts/read_maincfg.php');
++include_once('../scripts/loads.php');
++
++for ($pin = 0; $pin < count($LOADS_LIM); $pin++) {
++    $LOADS_STATUS[$pin] = status($RELAY_URL, $pin);
++}
++
++header('Content-Type: application/json');
++echo json_encode($LOADS_STATUS);
++
++?>
+diff -u -N -r -X diff_exclude 123solar-1.5.5/relays.php 123solar_pdc-1.5.5-5/relays.php
+--- 123solar-1.5.5/relays.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/relays.php	2015-04-23 14:25:40.000000000 +0200
+@@ -0,0 +1,501 @@
++<?php include("styles/globalheader.php");
++include("scripts/read_maincfg.php");
++include_once("scripts/meter.php");
++
++if (!isset($PLANT_POWERtot)) {
++    $PLANT_POWERtot = 0;
++}
++if (!isset($YMAXtot)) {
++    $YMAXtot = 0;
++}
++if (!isset($PRODXDAYStot)) {
++    $PRODXDAYStot = 0;
++}
++if (!isset($YINTERVALtot)) {
++    $YINTERVALtot = 0;
++}
++
++for ($i=1;$i<=$NUMINV;$i++) {
++ $invtnum=$i;
++ include("scripts/read_invtcfg.php"); 
++ $PLANTPOWER[$i] = $PLANT_POWER;
++ $PLANT_POWERtot+=$PLANT_POWER;
++ $YMAXtot+=$YMAX;
++ if ($PRODXDAYS>$PRODXDAYStot) {
++ $PRODXDAYStot= $PRODXDAYS;
++ }
++ $YINTERVALtot+=$YINTERVAL;
++}
++if(!isset($ZMAXtot)) {
++    $ZMAXtot=0;
++}
++#$ZMAXtot=$YMAXtot + 3000;
++$ZMAXtot=7200;
++?>
++
++<script type="text/javascript">
++<?php
++include("js_loads.php");
++?>
++
++$(document).ready(function() 
++{
++Highcharts.setOptions({
++global: {useUTC: true},
++lang: {
++thousandsSep: '<?php echo $THSEP ?>',
++decimalPoint: '<?php echo $DPOINT ?>',
++months: ['<?php for($i=1;$i<12;$i++) {echo "$lgMONTH[$i]','";} echo $lgMONTH[12]?>'],
++shortMonths: ['<?php for($i=1;$i<12;$i++) {echo "$lgSMONTH[$i]','";} echo $lgSMONTH[12]?>'],
++weekdays: ['<?php for($i=1;$i<7;$i++) {echo "$lgWEEKD[$i]','";} echo $lgWEEKD[7]?>']
++}
++});
++
++/// Live gauge ///
++var Mygauge, options4 = {
++  chart: {
++    renderTo: 'container4',
++    type: 'gauge',
++    backgroundColor: null,
++    plotBackgroundColor: null,
++    plotBackgroundImage: null,
++    plotBorderWidth: 0,
++    plotShadow: false,
++    height: 250,
++          events: {
++			load: function() {
++					var series = this.series[0];
++					var invtnum = <?php echo $invtnum; ?>;  
++					setInterval(function () {
++						$.getJSON("programs/programmultilive.php", function(data){
++							json = eval(data);
++							var point = Mygauge.series[0].points[0];
++							point.update(json[0].GPTOT);
++							document.getElementById('PMAXOTD').innerHTML = json[0].PMAXOTD;
++							document.getElementById('PMAXOTDTIME').innerHTML = json[0].PMAXOTDTIME;   
++						 });
++						$.getJSON("programs/programmultiday.php", function(data){
++							json = eval(data);
++							document.getElementById('PKWH').innerHTML = json.title;
++						 });
++					}, 500);
++				}
++			 }
++  },
++  title: {
++    text: 'Production'
++  },
++  plotOptions: {
++  gauge: {
++    pivot: {
++      radius: 8,
++      borderWidth: 1,
++      borderColor: '#303030',
++      backgroundColor: {
++        linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
++        stops: [
++          [0, '#AAA'],
++          [1, '#333']
++        ]
++      }
++    },
++    dial: {
++      baseLength : 10,
++      baseWidth: 8,
++      backgroundColor: '#666',
++      radius : 70,
++      rearLength: 40
++    }
++  }},
++  pane: {
++    startAngle: -150,
++    endAngle: 150,
++            background: [{
++                backgroundColor: {
++                    linearGradient: { x1: 0, y1: 1, x2: 0, y2: 0 },
++                    stops: [
++                        [0, '#333'],
++                        [1, '#AAA']
++                    ]
++                },
++                borderWidth: 0,
++                outerRadius: '115%'
++            }, {
++                backgroundColor: {
++                    linearGradient: { x1: 0, y1: 1, x2: 0, y2:0 },
++                    stops: [
++                        [0, '#AAA'],
++                        [1, '#FFF']
++                    ]
++                },
++                borderWidth: 1,
++                outerRadius: '113%'
++            },{
++                // default background
++            }, {
++                backgroundColor: Highcharts.svg ? {
++                    radialGradient: {
++                        cx: 0.5,
++                        cy: -0.6,
++                        r: 1.6
++                    },
++                    stops: [
++                        [0.5, 'rgba(255, 255, 255, 0.1)'],
++                        [0.3, 'rgba(200, 200, 200, 0.1)']
++                    ]
++                } : null },{
++                backgroundColor: Highcharts.svg ? {
++                    radialGradient: {
++                        cx: 0.5,
++                        cy: -0.9,
++                        r: 2.6
++                    },
++                    stops: [
++                        [0.5, 'rgba(255, 255, 255, 0.1)'],
++                        [0.3, 'rgba(200, 200, 200, 0.1)']
++                    ]
++                } : null }
++                        ]
++  },
++  yAxis: {
++    min: 0,
++    max: <?php echo "$YMAXtot";?>,
++    
++    minorTickInterval: 'auto',
++    minorTickWidth: 1,
++    minorTickLength: 5,
++    minorTickPosition: 'inside',
++    minorTickColor: '#666',
++
++    tickPixelInterval: 50,
++    tickWidth: 2,
++    tickPosition: 'inside',
++    tickLength: 15,
++    tickColor: '#666',
++    labels: {
++      step: 2,
++      rotation: 'auto'
++    },
++    title: {
++      style: {
++        color: '#555',
++        fontSize: '18px'
++      },
++      y: 125,
++      text: 'W'
++    },
++    plotBands: [{
++      from: 0,
++      to: <?php $Y9=round(($YMAXtot/9),0); echo $Y9;?>,
++      color: '#F10D17'
++    }, {
++      from: <?php echo $Y9;?> ,
++      to: <?php echo $Y9*2;?>,
++      color: '#F76415'
++    }, {
++      from: <?php echo $Y9*2;?>,
++      to: <?php echo $Y9*3;?>,
++      color: '#F29D16'
++    }, {
++      from: <?php echo $Y9*3;?>,
++      to: <?php echo $Y9*4;?>,
++      color: '#FFEA32'
++    }, {
++      from: <?php echo $Y9*4;?>,
++      to: <?php echo $Y9*5;?>,
++      color: '#FFFF45'
++    }, {
++      from: <?php echo $Y9*5;?>,
++      to: <?php echo $Y9*6;?>,
++      color: '#ECFF31'
++    }, {
++      from: <?php echo $Y9*6;?>,
++      to: <?php echo $Y9*7;?>,
++      color: '#94DE40'
++    }, {
++      from: <?php echo $Y9*7;?>,
++      to: <?php echo $Y9*8;?>,
++      color: '#2EC846'
++    }, {
++      from: <?php echo $Y9*8;?>,
++      to: <?php echo $YMAXtot;?>,
++      color: '#0DB44C'
++    }]        
++  },
++  exporting: {enabled: false},
++  credits: {enabled: false},
++  series: [{
++    name: 'power',
++    data: [0],
++    tooltip: {
++      valueSuffix: 'W'
++    },
++    dataLabels: {
++      enabled: true,
++	  formatter: function() {
++		if (this.y>=1000) {
++		return Highcharts.numberFormat(this.y,'0');
++		} else {
++		return Highcharts.numberFormat(this.y,'1');
++		}
++	  },
++	  color: '#666',
++	  x: 0,
++	  y: 40,
++	  style: {
++		fontSize: '12px'
++	  }
++    }
++  }]
++};
++  
++Mygauge = new Highcharts.Chart(options4);
++Mygauge.series[0].data[0].dataLabel.box.hide();
++
++/// Live consumption gauge ///
++var MyConsumptionGauge, options1 = {
++  chart: {
++    renderTo: 'container1',
++    type: 'gauge',
++    backgroundColor: null,
++    plotBackgroundColor: null,
++    plotBackgroundImage: null,
++    plotBorderWidth: 0,
++    plotShadow: false,
++    height: 250,
++    events: {
++                       load: function() {
++                               var series = this.series[0];
++                               setInterval(function () {
++                                       $.getJSON("programs/meter_status.php", function(data){
++                                               json = eval(data);
++                                               var point = MyConsumptionGauge.series[0].points[0];
++                                               point.update(json.KW,false);
++                                               //document.getElementById('KWH').innerHTML = json.KWH;
++                                               $("#KWH").html(json.KWH);
++                                               //alert("kW = " + json.KW + ", kWh = " + json.KWH);
++                                               MyConsumptionGauge.redraw();
++                                        });
++                               },1000);
++                               //}, 1000 * 60 * 1);
++                        }
++    }
++  },
++  title: {
++    text: 'Consumption'
++  },
++  plotOptions: {
++         gauge: {
++               pivot: {
++                 radius: 8,
++                 borderWidth: 1,
++                 borderColor: '#303030',
++                 backgroundColor: {
++                       linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
++                       stops: [[0, '#AAA'],
++                               [1, '#333']]
++                 }
++               },
++               dial: {
++                 baseLength : 10,
++                 baseWidth: 8,
++                 backgroundColor: '#666',
++
++                 radius : 70,
++                 rearLength: 40
++               }
++         }
++  },
++  pane: {
++    startAngle: -150,
++    endAngle: 150,
++            background: [{
++                backgroundColor: {
++                    linearGradient: { x1: 0, y1: 1, x2: 0, y2: 0 },
++                    stops: [
++                        [0, '#333'],
++                        [1, '#AAA']
++                    ]
++                },
++                borderWidth: 0,
++                outerRadius: '115%'
++            }, {
++                backgroundColor: {
++                    linearGradient: { x1: 0, y1: 1, x2: 0, y2:0 },
++                    stops: [
++                        [0, '#AAA'],
++                        [1, '#FFF']
++                    ]
++                },
++                borderWidth: 1,
++                outerRadius: '113%'
++            },{
++                // default background
++            }, {
++                backgroundColor: Highcharts.svg ? {
++                    radialGradient: {
++                        cx: 0.5,
++                        cy: -0.6,
++                        r: 1.6
++                    },
++                    stops: [
++                        [0.5, 'rgba(255, 255, 255, 0.1)'],
++                        [0.3, 'rgba(200, 200, 200, 0.1)']
++                    ]
++                } : null },{
++                backgroundColor: Highcharts.svg ? {
++                    radialGradient: {
++                        cx: 0.5,
++                        cy: -0.9,
++                        r: 2.6
++                    },
++                    stops: [
++                        [0.5, 'rgba(255, 255, 255, 0.1)'],
++                        [0.3, 'rgba(200, 200, 200, 0.1)']
++                    ]
++                } : null }
++                        ]
++  },
++  yAxis: {
++    min: 0,
++    max: <?php echo "$ZMAXtot";?>,
++
++    minorTickInterval: 'auto',
++    minorTickWidth: 1,
++    minorTickLength: 5,
++    minorTickPosition: 'inside',
++    minorTickColor: '#666',
++
++    tickPixelInterval: 50,
++    tickWidth: 2,
++    tickPosition: 'inside',
++    tickLength: 15,
++    tickColor: '#666',
++    labels: {
++      step: 2,
++      rotation: 'auto'
++    },
++    title: {
++      style: {
++        color: '#555',
++        fontSize: '18px'
++      },
++      y: 125,
++      text: 'W'
++    },
++    plotBands: [{
++      from: 0,
++      to: <?php $Z9=round(($ZMAXtot/9),0); echo $Z9;?>,
++      color: '#0DB44C'
++    }, {
++      from: <?php echo $Z9;?> ,
++      to: <?php echo $Z9*2;?>,
++      color: '#2EC846'
++    }, {
++      from: <?php echo $Z9*2;?>,
++      to: <?php echo $Z9*3;?>,
++      color: '#ECFF31'
++    }, {
++      from: <?php echo $Z9*3;?>,
++      to: <?php echo $Z9*4;?>,
++      color: '#FFFF45'
++    }, {
++      from: <?php echo $Z9*4;?>,
++      to: <?php echo $Z9*5;?>,
++      color: '#FFEA32'
++    }, {
++      from: <?php echo $Z9*5;?>,
++      to: <?php echo $Z9*6;?>,
++      color: '#F29D16'
++    }, {
++      from: <?php echo $Z9*6;?>,
++      to: <?php echo $Z9*7;?>,
++     color: '#94DE40'
++    }, {
++      from: <?php echo $Z9*7;?>,
++      to: <?php echo $Z9*8;?>,
++      color: '#F76415'
++    }, {
++      from: <?php echo $Z9*8;?>,
++      to: <?php echo $ZMAXtot;?>,
++      color: '#F10D17'
++    }]
++  },
++  exporting: {enabled: false},
++  credits: {enabled: false},
++  series: [{
++    name: 'powerconsumption',
++    data: [0],
++    tooltip: {
++      valueSuffix: 'W'
++    },
++    dataLabels: {
++      enabled: true,
++         formatter: function() {
++               if (this.y>=1000) {
++                       return Highcharts.numberFormat(this.y,'0');
++               } else {
++                       return Highcharts.numberFormat(this.y,'1');
++               }
++         },
++         color: '#666',
++                 x: 0,
++                 y: 40,
++                 style: {
++                       fontSize: '12px'
++                 }
++    }
++  }]
++};
++
++MyConsumptionGauge = new Highcharts.Chart(options1);
++MyConsumptionGauge.series[0].data[0].dataLabel.box.hide();
++
++getLoadsVal();
++
++});
++
++</script>   
++
++<!-- <div style="width: 100%; text-align: center ;"><b>Consmuption / Production</b></div> -->
++<div class="container" style="margin: 0 auto; width: 100%; ">
++    <div class="left" style="float: left; width: 50%; text-align: right; vertical-align: middle">
++               <div>
++                       <div id="container1"></div>
++                       <p style="width: 100%; text-align: center ;">
++                               <font size="-2">
++                                       <b id='KWH'>--</b> kWh</b> last 24h
++                               </font>
++                       </p>
++               </div>
++    </div>
++       <div class="right" style="float: right; width: 50%; text-align: left; vertical-align: middle">
++		<div id="container4"></div>
++		<p style="width: 100%; text-align: center ;">
++			<font size="-2"><?php echo $lgPMAX;?><br/>
++				<b id='PMAXOTD'>--</b> W @ <b id='PMAXOTDTIME'>--</b>
++				&nbsp;/&nbsp;<span id='PKWH'>--</span>
++			</font>
++		</p>
++	</div>
++	
++    <div class="footer" style="padding: 15px; margin-top: 10px; margin-right: 20px; margin-left: 20px; text-align: left; border-radius: 15px; -moz-border-radius: 15px; background: none repeat scroll 0 0 #fff; clear: both;">
++		<table border = "0" cellspacing = "5" cellpadding = "0" style="text-align: center;" align="center">
++<?php 
++		for ($pin = 0; $pin < count($LOADS_LIM); $pin++) {
++?>
++		<tr>
++			<td><label><strong><?php echo $LOADS_LABEL[$pin]?></strong>&nbsp;[<?php echo $LOADS_LIM[$pin]?>]&nbsp;</label></td>
++			<td><input type="button" onclick="loadsOnOff('<?php echo $pin?>','1')" value="ON" id="BTN_ON_<?php echo $pin?>"/></td>
++			<td><input type="button" onclick="loadsOnOff('<?php echo $pin?>','0')" value="OFF" id="BTN_OFF_<?php echo $pin?>"/></td>
++			<td><input type="button" onclick="loadsOnOff('<?php echo $pin?>','2')" value="FV" id="BTN_FV_<?php echo $pin?>"/></td>
++			<td><b id="RELAY<?php echo $pin?>">--</b>&nbsp;/&nbsp;<b id="MODE<?php echo $pin?>">--</b></td>
++		</tr>
++<?php 
++		}
++?>
++		</table>
++	</div>
++</div>
++
++<?php include("styles/".$user_style."/footer.php"); ?>
+diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/debug_loads.php 123solar_pdc-1.5.5-5/scripts/debug_loads.php
+--- 123solar-1.5.5/scripts/debug_loads.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/scripts/debug_loads.php	2015-04-23 14:25:40.000000000 +0200
+@@ -0,0 +1,4 @@
++<?php
++ error_reporting(E_ALL);
++ ini_set("display_errors", 1);
++ include("fv_loads.php");?>
+\ No newline at end of file
+diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/debugmem_read.php 123solar_pdc-1.5.5-5/scripts/debugmem_read.php
+--- 123solar-1.5.5/scripts/debugmem_read.php	2013-09-17 20:23:00.000000000 +0200
++++ 123solar_pdc-1.5.5-5/scripts/debugmem_read.php	2015-04-23 14:25:40.000000000 +0200
+@@ -123,9 +123,22 @@
+ TITLE: $TITLE<br>
+ SUBTITLE: $SUBTITLE<br>
+ KEEPDDAYS: $KEEPDDAYS<br>
+-AMOUNTLOG: $AMOUNTLOG<br><br>
++AMOUNTLOG: $AMOUNTLOG<br>
++RELAY_URL: $RELAY_URL<br>
++METER_URL: $METER_URL<br>
++METER_TYPE: $METER_TYPE<br>
++METER_SENSOR: $METER_SENSOR<br>
+   ";
+-
++?>
++  <pre>
++  LOADS_LIM: <?php print_r($LOADS_LIM); ?>
++  LOADS_HIS: <?php print_r($LOADS_HIS); ?>
++  LOADS_MIN: <?php print_r($LOADS_MIN); ?>
++  LOADS_LABEL: <?php print_r($LOADS_LABEL); ?>
++  </pre>
++  
++<?php
++  
+ for ($i = 1; $i <= $NUMINV; $i++) {
+ $invtnum=$i;
+ include("read_invtcfg.php"); //Load main constants
+diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/fv_loads.php 123solar_pdc-1.5.5-5/scripts/fv_loads.php
+--- 123solar-1.5.5/scripts/fv_loads.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/scripts/fv_loads.php	2015-04-23 14:25:40.000000000 +0200
+@@ -0,0 +1,169 @@
++#!/usr/bin/php
++
++<?php
++include('read_maincfg.php');
++include_once('loads.php');
++include_once('loads_db.php');
++include_once('meter.php');
++
++date_default_timezone_set($DTZ);
++
++$max_power = 0;
++
++for ($invt_num = 1; $invt_num <= $NUMINV; $invt_num++) {
++    $invtnum = $invt_num;
++    include("read_invtcfg.php");
++    $max_power = $max_power + $PLANT_POWER;
++    $systemid = "1231" . $invt_num;
++    @$shmid = shmop_open($systemid, "a", 0444, 256);
++    if (!empty($shmid)) {
++        $livedash[0] = shmop_read($shmid, 0, 256);
++        shmop_close($shmid);
++    } else {
++        $nowUTC      = strtotime(date("Ymd H:i:s"));
++        $livedash[0] = "$nowUTC,0,0,0,0,0,0,0,0,0,0,0,0,0,0";
++    }
++    $array = preg_split("/,/", $livedash[0]);
++
++    if (!isset($GPTOT)) {
++        $GPTOT = 0;
++    }
++    $array[9] *= $CORRECTFACTOR;
++    $GPTOT += $array[9];
++}
++
++// Produzione
++if ($GPTOT > 1000) {
++    $GPTOT = round($GPTOT, 0);
++} else {
++    $GPTOT = round($GPTOT, 1);
++}
++
++// Consumo
++$cons = read_meter_kw($METER_URL);
++echo "Comsumption = $cons\n";
++
++// Netto
++$NET = $GPTOT - $cons;
++
++$NUM_LOADS = count($LOADS_LIM);
++$LOADS_FORCE = array();
++$LOADS_STATUS = array();
++$LOADS_LAST_ON = array();
++
++for ($i = 0; $i < $NUM_LOADS; $i++) {
++    $LOADS_FORCE[$i] = get_status($i);
++    $LOADS_STATUS[$i] = read_load($RELAY_URL, $i);
++    $LOADS_LAST_ON[$i] = get_laston($i);
++}
++
++$date = date('Ymd_His');
++$now = time();
++//$nowUTC = gmdate("Y-m-d H:i:s", $now);
++$nowUTC = date("Y-m-d H:i:s", $now);
++
++$power = $NET;
++
++if ($NET < 0) {
++    
++    // Lower production
++    for ($pin = $NUM_LOADS - 1; $pin >= 0; $pin--) {
++
++	    if ($LOADS_LAST_ON[$pin] > 0) {
++		$lastOn = date("Y-m-d H:i:s", $LOADS_LAST_ON[$pin]);
++	    } else {
++		$lastOn = 0;
++	    }
++	
++	    echo "$pin - $LOADS_LABEL[$pin]: LOADS_FORCE = $LOADS_FORCE[$pin], LOADS_STATUS = $LOADS_STATUS[$pin], LOADS_LAST_ON = $lastOn, now = $nowUTC, LOADS_LIM = $LOADS_LIM[$pin], LOADS_HIS = $LOADS_HIS[$pin], GPTOT = $GPTOT, cons = $cons, NET = $NET, power = $power\n";
++	
++	    if ($LOADS_FORCE[$pin] == STATUS_FV) {
++		    /*
++		    $b11 = $cons == 0;
++		    $b12 = ($power + $LOADS_HIS[$pin]) < $LOADS_LIM[$pin];
++		    $b1 = ($b11 && $b12);
++		    echo "b11 = $b11\nb12 = $b12\n";
++		    $b21 = $cons > 0;
++		    $b221 = ($power + $LOADS_HIS[$pin]) < 0;
++		    $b222 = ($GPTOT == 0);
++		    $b22 = $b221 || $b222;
++		    $b2 = $b21 && $b22;
++		    echo "b21 = $b21\nb221 = $b221\nb222 = $b222\nb22 = $b22\nb2 = $b2\n";
++		    $b3 = strcmp($LOADS_STATUS[$pin], STATUS_ON) == 0;
++		    echo "b2 = $b2\nb3 = $b3\n";
++		    */
++		    //if (($power + $LOADS_HIS[$pin]) < 0 && strcmp($LOADS_STATUS[$pin], STATUS_ON) == 0) {
++		    if ((($cons == 0 && ($power + $LOADS_HIS[$pin]) < $LOADS_LIM[$pin]) || 
++		         ($cons > 0 && (($power + $LOADS_HIS[$pin]) < 0 || $GPTOT == 0))) && 
++		        strcmp($LOADS_STATUS[$pin], STATUS_ON) == 0) {
++		        
++			    $diff = round(abs($now - $LOADS_LAST_ON[$pin]) / 60, 2);
++			    if ($diff >= $LOADS_MIN[$pin]) {
++				    $power = $power + $LOADS_LIM[$pin];
++				    echo "Turning off $pin $LOADS_LABEL[$pin]\n";
++				    change_load($RELAY_URL, $pin, STATUS_OFF);
++				    save_laston($pin, 0);
++				    save_data($pin, $date, $NET, $LOADS_STATUS[$pin], STATUS_OFF, $LOADS_FORCE[$pin]);
++			    } else {
++				    echo "Waiting at least $LOADS_MIN[$pin] min before turning off $pin. Now $diff\n";
++			    }
++		    } else {
++			    echo "Nothing to do OFF FV\n";
++			    save_data($pin, $date, $NET, $LOADS_STATUS[$pin], $LOADS_STATUS[$pin], $LOADS_FORCE[$pin]);
++		    }
++		
++	} else {
++		echo "Nothing to do OFF\n";
++		save_data($pin, $date, $NET, $LOADS_STATUS[$pin], $LOADS_STATUS[$pin], $LOADS_FORCE[$pin]);
++	}
++    }
++} else {
++
++    // Higher production
++    for ($pin = 0; $pin < $NUM_LOADS; $pin++) {
++
++	    if ($LOADS_LAST_ON[$pin] > 0) {
++		$lastOn = date("Y-m-d H:i:s", $LOADS_LAST_ON[$pin]);
++	    } else {
++		$lastOn = 0;
++	    }
++	
++	    echo "$pin - $LOADS_LABEL[$pin]: LOADS_FORCE = $LOADS_FORCE[$pin], LOADS_STATUS = $LOADS_STATUS[$pin], LOADS_LAST_ON = $lastOn, now = $nowUTC, LOADS_LIM = $LOADS_LIM[$pin], LOADS_HIS = $LOADS_HIS[$pin], GPTOT = $GPTOT, cons = $cons, NET = $NET, power = $power\n";
++	
++	    if ($LOADS_FORCE[$pin] == STATUS_FV) {
++		
++		    if ($power >= $LOADS_LIM[$pin] && strcmp($LOADS_STATUS[$pin], STATUS_OFF) == 0) {
++		    
++			    echo "Turning on $pin $LOADS_LABEL[$pin]\n";
++			    $power = $power - $LOADS_LIM[$pin];
++			    change_load($RELAY_URL, $pin, STATUS_ON);
++			    save_laston($pin, $now);
++			    save_data($pin, $date, $NET, $LOADS_STATUS[$pin], STATUS_ON, $LOADS_FORCE[$pin]);
++			    
++		    } else if (($cons == 0 && ($power + $LOADS_HIS[$pin]) < $LOADS_LIM[$pin]) && strcmp($LOADS_STATUS[$pin], STATUS_ON) == 0) {
++		        
++			    $diff = round(abs($now - $LOADS_LAST_ON[$pin]) / 60, 2);
++			    if ($diff >= $LOADS_MIN[$pin]) {
++				    $power = $power + $LOADS_LIM[$pin];
++				    echo "Turning off $pin\n";
++				    change_load($RELAY_URL, $pin, STATUS_OFF);
++				    save_laston($pin, 0);
++				    save_data($pin, $date, $NET, $LOADS_STATUS[$pin], STATUS_OFF, $LOADS_FORCE[$pin]);
++			    } else {
++				    echo "Waiting at least $LOADS_MIN[$pin] min before turning off $pin. Now $diff\n";
++			    }
++		    } else {
++			    echo "Nothing to do ON FV\n";
++			    save_data($pin, $date, $NET, $LOADS_STATUS[$pin], $LOADS_STATUS[$pin], $LOADS_FORCE[$pin]);
++		    }
++		
++	} else {
++		echo "Nothing to do ON\n";
++		save_data($pin, $date, $NET, $LOADS_STATUS[$pin], $LOADS_STATUS[$pin], $LOADS_FORCE[$pin]);
++	}
++    }
++
++}
++
++echo "\n";
++?>
+\ No newline at end of file
+diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/fv_loads0.php 123solar_pdc-1.5.5-5/scripts/fv_loads0.php
+--- 123solar-1.5.5/scripts/fv_loads0.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/scripts/fv_loads0.php	2015-04-23 14:25:40.000000000 +0200
+@@ -0,0 +1,94 @@
++#!/usr/bin/php
++
++<?php
++include('read_maincfg.php');
++include_once('loads.php');
++include_once('loads_db.php');
++include_once('meter.php');
++
++for ($invt_num = 1; $invt_num <= $NUMINV; $invt_num++) {
++    $invtnum = $invt_num;
++    include("read_invtcfg.php");
++    $systemid = "1231" . $invt_num;
++    @$shmid = shmop_open($systemid, "a", 0444, 256);
++    if (!empty($shmid)) {
++        $livedash[0] = shmop_read($shmid, 0, 256);
++        shmop_close($shmid);
++    } else {
++        $nowUTC      = strtotime(date("Ymd H:i:s"));
++        $livedash[0] = "$nowUTC,0,0,0,0,0,0,0,0,0,0,0,0,0,0";
++    }
++    $array = preg_split("/,/", $livedash[0]);
++
++    if (!isset($GPTOT)) {
++        $GPTOT = 0;
++    }
++    $array[9] *= $CORRECTFACTOR;
++    $GPTOT += $array[9];
++}
++
++// Produzione
++if ($GPTOT > 1000) {
++    $GPTOT = round($GPTOT, 0);
++} else {
++    $GPTOT = round($GPTOT, 1);
++}
++
++// Consumo
++$cons = read_meter_kw($METER_URL);
++echo "Comsumption = $cons\n";
++
++// Netto
++$NET = $GPTOT - $cons;
++
++$NUM_LOADS = count($LOADS_LIM);
++$LOADS_FORCE = array();
++$LOADS_STATUS = array();
++$LOADS_LAST_ON = array();
++
++for ($i = 0; $i < $NUM_LOADS; $i++) {
++    $LOADS_FORCE[$i] = get_status($i);
++    $LOADS_STATUS[$i] = read_load($RELAY_URL, $i);
++    $LOADS_LAST_ON[$i] = get_laston($i);
++}
++
++$date = date('Ymd_His');
++$now = time();
++$nowUTC = gmdate("Y-m-d H:i:s", $now);
++
++for ($pin = 0; $pin < $NUM_LOADS; $pin++) {
++	if ($LOADS_LAST_ON[$pin] > 0) {
++	    $lastOn = gmdate("Y-m-d H:i:s", $LOADS_LAST_ON[$pin]);
++	} else {
++	    $lastOn = 0;
++	}
++	
++	echo "$pin: LOADS_FORCE = $LOADS_FORCE[$pin], LOADS_STATUS = $LOADS_STATUS[$pin], LOADS_LAST_ON = $lastOn, now = $nowUTC, LOADS_LIM = $LOADS_LIM[$pin], GPTOT = $GPTOT, NET = $NET\n";
++	if ($LOADS_FORCE[$pin] == STATUS_FV) {
++		if ($NET < ($LOADS_LIM[$pin] - $LOADS_HIS[$pin]) && strcmp($LOADS_STATUS[$pin], STATUS_ON) == 0) {
++			$diff = round(abs($now - $LOADS_LAST_ON[$pin]) / 60, 2);
++			if ($diff >= $LOADS_MIN[$pin]) {
++				echo "Turning off $pin\n";
++				change_load($RELAY_URL, $pin, STATUS_OFF);
++				save_laston($pin, 0);
++				save_data($pin, $date, $NET, $LOADS_STATUS[$pin], STATUS_OFF, $LOADS_FORCE[$pin]);
++			} else {
++				echo "Waiting at least $LOADS_MIN[$pin] min before turning off $pin. Now $diff\n";
++			}
++		} else if ($NET >= $LOADS_LIM[$pin] && strcmp($LOADS_STATUS[$pin], STATUS_OFF) == 0) {
++			echo "Turning on $pin\n";
++			change_load($RELAY_URL, $pin, STATUS_ON);
++			save_laston($pin, $now);
++			save_data($pin, $date, $NET, $LOADS_STATUS[$pin], STATUS_ON, $LOADS_FORCE[$pin]);
++		} else {
++			echo "Nothing to do FV\n";
++			save_data($pin, $date, $NET, $LOADS_STATUS[$pin], $LOADS_STATUS[$pin], $LOADS_FORCE[$pin]);
++		}
++	} else {
++		echo "Nothing to do\n";
++		save_data($pin, $date, $NET, $LOADS_STATUS[$pin], $LOADS_STATUS[$pin], $LOADS_FORCE[$pin]);
++	}
++
++}
++echo "\n";
++?>
+\ No newline at end of file
+diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/loads.php 123solar_pdc-1.5.5-5/scripts/loads.php
+--- 123solar-1.5.5/scripts/loads.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/scripts/loads.php	2015-04-23 14:25:40.000000000 +0200
+@@ -0,0 +1,86 @@
++<?php
++include('read_maincfg.php');
++include_once('loads_db.php');
++
++function change_load($MY_URL, $pin, $value) {
++
++	$url = $MY_URL . $pin . '/' . $value;
++	
++	$post = NULL;
++
++	$options = array(
++			CURLOPT_POST => 1,
++			CURLOPT_HEADER => 0,
++			CURLOPT_URL => $url,
++			CURLOPT_FRESH_CONNECT => 1,
++			CURLOPT_RETURNTRANSFER => 1,
++			CURLOPT_FORBID_REUSE => 1,
++			CURLOPT_TIMEOUT => 4,
++			CURLOPT_POSTFIELDS => $post
++	);
++
++	$ch = curl_init();
++	curl_setopt_array($ch, $options);
++
++	$result = curl_exec($ch);
++	
++	curl_close($ch);
++}
++
++function read_load($MY_URL, $pin) {
++
++    try {
++	$URL = $MY_URL . $pin;
++	//echo $URL;
++	$ch = curl_init($URL);
++	curl_setopt($ch, CURLOPT_HEADER, 0);
++	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
++	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,10); 
++	curl_setopt($ch, CURLOPT_TIMEOUT, 5); //timeout in seconds
++
++	$LOAD_STATUS = curl_exec($ch);
++	curl_close($ch);
++	
++	//echo "URL = $URL, status = $LOAD_STATUS\n";
++    } catch (Exception $e) {
++            die( "Cannot connect to $URL:".$e->getMessage() );
++    }
++    
++    return $LOAD_STATUS;
++}
++
++function status($MY_URL, $pin) {
++
++	$LOAD_STATUS = read_load($MY_URL, $pin);
++	$status = "";
++
++	if (strcmp($LOAD_STATUS, STATUS_ON) == 0) {
++		$status = "ON";
++	} else if (strcmp($LOAD_STATUS, STATUS_OFF) == 0){
++		$status = "OFF";
++	} else {
++		$status = "UNKNOWN '".$LOAD_STATUS."'";
++	}
++	
++	$FV_STATUS = get_status($pin);
++	if (strcmp($FV_STATUS, STATUS_ON) == 0) {
++		$fv_status = "ON";
++	} else if (strcmp($FV_STATUS, STATUS_OFF) == 0){
++		$fv_status = "OFF";
++	} else if (strcmp($FV_STATUS, STATUS_FV) == 0){
++		$fv_status = "FV";
++	} else {
++		$fv_status = "UNKNOWN '".$FV_STATUS."'";
++	}
++	
++	//echo "status(). $LOAD_STATUS = " . $LOAD_STATUS;
++	return $status . "/" . $fv_status;
++}
++
++function load_status($MY_URL, $pin) {
++
++	$status = status($MY_URL, $pin);
++	
++	print $status;
++}
++?>
+\ No newline at end of file
+diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/loads_db.php 123solar_pdc-1.5.5-5/scripts/loads_db.php
+--- 123solar-1.5.5/scripts/loads_db.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/scripts/loads_db.php	2015-04-23 14:25:40.000000000 +0200
+@@ -0,0 +1,96 @@
++<?php
++
++define('STATUS_OFF', '0');
++define('STATUS_ON', '1');
++define('STATUS_FV', '2');
++define('STATUS_UNKNOWN', '3');
++define('SERVER', '127.0.0.1');
++
++function save_status($pin, $status) {
++	$redis = new Redis();
++	try {
++		$connected = $redis->connect(SERVER);
++	
++		$redis->set($pin . 'status', $status);
++		//echo "save_status($pin, $status)";
++		$redis->persist($pin . 'status');
++
++		$redis->close();
++	} catch (Exception $e) {
++    // tried changing to RedisException, didn't work either
++        die( "Cannot connect to redis server:".$e->getMessage() );
++    }
++}
++
++function get_status($pin) {
++	$status = "";
++	$redis = new Redis();
++	try {
++		$connected = $redis->connect(SERVER);	
++		$status = $redis->get($pin . 'status');
++		#var_dump($status);
++
++		$redis->close();
++	} catch (Exception $e) {
++    // tried changing to RedisException, didn't work either
++        die( "Cannot connect to redis server:".$e->getMessage() );
++    }
++	return $status;
++}
++
++function save_data($pin, $date_time, $prod, $old_status, $new_status, $force_status) {
++	$redis = new Redis();
++	//try {
++		$redis->connect(SERVER);
++		
++		//$redis->delete($date_time);
++		$i1 = $redis->hset($pin . $date_time, 'PROD', $prod);
++#		echo "PROD[$date_time] -> $prod = $i1\n";
++		$i2 =  $redis->hset($pin . $date_time, 'OLD_STATUS', $old_status);
++#		echo "OLD_STATUS[$date_time] -> $old_status = $i2\n";
++		$i3 =  $redis->hset($pin . $date_time, 'NEW_STATUS', $new_status);
++#		echo "NEW_STATUS[$date_time] -> $new_status = $i3\n";
++		$i4 =  $redis->hset($pin . $date_time, 'FORCE_STATUS', $force_status);
++#		echo "FORCE_STATUS[$date_time] -> $force_status = $i4\n";
++		$i5 =  $redis->persist($pin . $date_time);
++#		echo "persist[$date_time] -> = $i5\n";
++
++		$redis->close();
++	//} catch (RedisException $e) {
++	    // tried changing to RedisException, didn't work either
++	//    die( "Cannot connect to redis server:".$e->getMessage() );
++	//}
++}
++
++function save_laston($pin, $time) {
++	$redis = new Redis();
++	try {
++		$connected = $redis->connect(SERVER);
++	
++		$redis->set($pin . 'timeon', strval($time));
++		#echo "save_laston($time)";
++		$redis->persist($pin . 'timeon');
++
++		$redis->close();
++	} catch (Exception $e) {
++	// tried changing to RedisException, didn't work either
++        die( "Cannot connect to redis server:".$e->getMessage() );
++    }
++}
++
++function get_laston($pin) {
++	$time = "";
++	$redis = new Redis();
++	try {
++		$connected = $redis->connect(SERVER);	
++		$time = intval($redis->get($pin . 'timeon'));
++		//var_dump($time);
++
++		$redis->close();
++	} catch (Exception $e) {
++		$time = 0;
++    }
++	return $time;
++}
++
++?>
+\ No newline at end of file
+diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/meter.php 123solar_pdc-1.5.5-5/scripts/meter.php
+--- 123solar-1.5.5/scripts/meter.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/scripts/meter.php	2015-04-23 14:25:40.000000000 +0200
+@@ -0,0 +1,166 @@
++<?php
++include_once('read_maincfg.php');
++
++function read_meter($MY_URL, $id) {
++    
++    global $METER_TYPE;
++    global $METER_SENSOR;
++    $METER_TYPE_ARDUINO = "arduino";
++    $METER_TYPE_MEASUREIT = "measureit";
++    $METER_TYPE_METERN = "metern";
++//    echo "METER_TYPE= $METER_TYPE\nMY_URL=$MY_URL\n";
++    
++    try {
++	$value = 0;
++	/*
++	if (isset($METER_TYPE)) {
++	    var_dump($METER_TYPE);
++	}
++	*/
++	
++	if (strpos($METER_TYPE, $METER_TYPE_ARDUINO) !== false) {
++	    $MY_URL1 = "";
++	    //echo "METER_TYPE: $METER_TYPE\n";
++	    //echo "METER_SENSOR: $METER_SENSOR\n";
++	    $ch = curl_init();
++	    if ($id == "Actual") {
++		$MY_URL1 = $MY_URL . "/showe/" . $METER_SENSOR;
++	    } else if ($id == "Today") {
++		$MY_URL1 = $MY_URL . "/showp/" . $METER_SENSOR;
++	    }
++	    
++	    curl_setopt($ch, CURLOPT_URL, $MY_URL1);
++	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
++	    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)');
++    
++	    $html = curl_exec($ch);
++	    $headers=get_headers($MY_URL1, 1);
++	    curl_close($ch);
++	    
++	    /*
++	    $DOM = new DOMDocument();
++	    $DOM->loadHTML($html);
++    
++	    //get all TD
++	    $items = $DOM->getElementById($id);
++    
++	    $value = (int) $items->nodeValue;
++	    */
++	    //echo "My URL $MY_URL1: $html\n";
++	    $valueStr = $html;
++	    $value = (float) $valueStr;
++	    if ($id == "Today") {
++		$value = $value / 1000;
++	    }
++	    //echo "value = $value\n";
++    
++	    //$handle = file_get_contents(urlencode($MY_URL));
++	} elseif (strpos($METER_TYPE, $METER_TYPE_MEASUREIT) !== false) {
++	    //echo "METER_TYPE: $METER_TYPE\n";
++	    $json = file_get_contents($MY_URL1);
++	    
++	    $data = json_decode($json, true);
++	    //print_r($data);
++	    $sensor = (int) $METER_SENSOR;
++	    $kw = $data[$sensor]["watt"];
++	    $kwh = $data[$sensor]["daily"];
++	    $kwh_text = $data[$sensor]["daily"];
++	    $kwh_ary = preg_split('/\n/', $kwh_text);
++	    $kwh = $kwh_ary[0];
++	
++	    if ($id == "Actual") {
++		$value = (int) $kw;
++	    } else if ($id == "Today") {
++		$value = $kwh;
++	    }
++	} elseif (strpos($METER_TYPE, $METER_TYPE_METERN) !== false) {
++	    $MY_URL1 = "";
++	    //echo "METER_TYPE: $METER_TYPE\n";
++	    //echo "METER_SENSOR: $METER_SENSOR\n";
++	    $ch = curl_init();
++	    if ($id == "Actual") {
++		;
++	    } else if ($id == "Today") {
++		;
++	    }
++	    $MY_URL1 = $MY_URL;
++	    /*
++	    curl_setopt($ch, CURLOPT_URL, $MY_URL1);
++	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
++	    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)');
++    
++	    $html = curl_exec($ch);
++	    $headers=get_headers($MY_URL1, 1);
++	    curl_close($ch);
++	    */
++	    $json = file_get_contents($MY_URL1);
++	    //echo $json . "\n";
++	    $data = json_decode($json, true);
++	    $meter = trim($METER_SENSOR);
++	    //echo "Meter sensor: $meter\n";
++	    //var_dump($data[$meter]);
++	    //echo $data[$meter]["KW"] . "\n";
++	    $kw = (float) $data[$meter]["KW"];
++	    $kwh_text = $data[$meter]["KWH"];
++	    //echo $data[$meter]["KWH"] . "\n";
++	    $kwh_text = preg_replace("/^.*\((.*)k.*$/", "$1", $kwh_text);
++	    //echo "kwh_text (regex): $kwh_text\n";
++	    $kwh_text = str_replace(",", ".", $kwh_text);
++	    //echo "kwh_text (replace): $kwh_text\n";
++	    $kwh = (float) $kwh_text;
++	    //echo "kwh: $kwh\n";
++	
++	    if ($id == "Actual") {
++		$value = (int) $kw;
++	    } else if ($id == "Today") {
++		$value = $kwh;
++		//echo "vlaue: $value\n";
++	    }
++	    //echo "value = $value\n";
++	} else {
++	    echo "None\n";
++	    echo "METER_TYPE:: --$METER_TYPE--\n";
++	}
++	
++	return $value;
++	
++    } catch (Exception $e) {
++	return 0;
++    }
++}
++
++function read_meter_kw($MY_URL) {
++    
++    $power = read_meter($MY_URL, "Actual");
++    if (is_null($power)) {
++        $power = 0;
++    }
++    
++    //echo "$URL -> '$power' KW";
++
++    return $power;
++}
++
++function read_meter_kwh($MY_URL) {
++
++    $energy = read_meter($MY_URL, "Today");
++    if (is_null($energy)) {
++        $energy = 0;
++    }
++    
++    //echo "$URL -> '$energy' KWH";
++
++    return $energy;
++}
++
++function meter_kw_status($MY_URL) {
++    $kw_status = read_meter_kw($MY_URL);
++    print $kw_status;
++}
++
++function meter_kwh_status($MY_URL) {
++    $kwh_status = read_meter_kwh($MY_URL);
++    print $kwh_status;
++}
++
++?>
+\ No newline at end of file
+diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/protocols/sdm120c.php 123solar_pdc-1.5.5-5/scripts/protocols/sdm120c.php
+--- 123solar-1.5.5/scripts/protocols/sdm120c.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/scripts/protocols/sdm120c.php	2015-01-26 14:03:55.000000000 +0100
+@@ -0,0 +1,54 @@
++<?php
++if(!defined('checkaccess')){die('Direct access not permitted');}
++// sdm120c is a command line program for reading the parameters out of EASTRON SDM120C ModBus Smart meter.
++// http://github.com/gianfrdp/SDM120C
++
++$SDTE = date("Ymd H:i:s");
++
++$I1V = null;
++$I1A = null;
++$I1P = null;
++
++$CMD_POOLING = "sdm120c -a ${'ADR'.$invt_num} ${'COMOPTION'.$invt_num} -q ${'PORT'.$invt_num}";
++//$CMD_POOLING = "sdm120c -a 2 -b 9600 -q /dev/ttyUSB0";
++
++//echo "$CMD_POOLING\n";
++
++$CMD_RETURN = exec($CMD_POOLING);
++//echo "$CMD_RETURN\n";
++
++$dataarray  = preg_split('/[[:space:]]+/', $CMD_RETURN);
++//var_dump($dataarray);
++
++$G1V = $dataarray[0];
++settype($G1V, 'float');
++
++$G1A = $dataarray[1];
++settype($G1A, 'float');
++
++$G1P = $dataarray[2];
++settype($G1P, 'float');
++
++$FRQ = $dataarray[4];
++settype($FRQ, 'float');
++
++$EFF = (float) 0.0;
++
++$INVT = null;
++
++$BOOT = null;
++
++$KWHT = $dataarray[5];
++settype($KWHT, 'float');
++$KWHT = $KWHT/1000;
++
++if ($KWHT != 0) {
++  $RET = 'OK';
++} else {
++  $RET = 'NOK';
++}
++
++
++//echo " $G1V \n $G1A \n $G1P \n $FRQ \n $EFF \n $KWHT\n";
++
++?>
+diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/protocols/sdm120c_checks.php 123solar_pdc-1.5.5-5/scripts/protocols/sdm120c_checks.php
+--- 123solar-1.5.5/scripts/protocols/sdm120c_checks.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/scripts/protocols/sdm120c_checks.php	2015-01-26 14:03:55.000000000 +0100
+@@ -0,0 +1,16 @@
++<?php
++if(!defined('checkaccess')){die('Direct access not permitted');}
++
++$ILEAK = 0;
++$RISO = 0;
++$PPEAK = 0;
++$PPEAKOTD = 0;
++$RET = 'NOK'; // No output
++
++// Info file
++// unset no info $CMD_INFO = "";
++
++// Alarm
++// unset no alarm $CMD_ALARM = "";
++
++?>
+diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/protocols/sdm120c_startup.php 123solar_pdc-1.5.5-5/scripts/protocols/sdm120c_startup.php
+--- 123solar-1.5.5/scripts/protocols/sdm120c_startup.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/scripts/protocols/sdm120c_startup.php	2015-01-26 14:03:55.000000000 +0100
+@@ -0,0 +1,4 @@
++<?php
++if(!defined('checkaccess')){die('Direct access not permitted');}
++$CMD_INFO = "";
++?>
+diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/pvoconsumption/meterNhousehold.php 123solar_pdc-1.5.5-5/scripts/pvoconsumption/meterNhousehold.php
+--- 123solar-1.5.5/scripts/pvoconsumption/meterNhousehold.php	2013-09-24 10:54:01.000000000 +0200
++++ 123solar_pdc-1.5.5-5/scripts/pvoconsumption/meterNhousehold.php	2015-04-23 14:25:40.000000000 +0200
+@@ -3,12 +3,10 @@
+ // You'll need to setup the following variables :
+ $meterndir = '/srv/http/metern/'; // meterN csv data path
+ $metnum    = 1; // meterN household meter number
+-
+-//////
+-//include("$meterndir" . '/scripts/read_maincfg.php');
+-include('read_maincfg.php');
++$passomn = 100000000; // pass-over of your meterN counter
++//
+ date_default_timezone_set($DTZ);
+-include("$meterndir" . '/scripts/read_metcfg.php');
++
+ $dir    = "$meterndir" . 'data/csv/';
+ $output = scandir($dir);
+ $output = glob($dir . '*.csv');
+@@ -43,8 +41,8 @@
+ if ($today=="$year$month$day") {
+     settype($val_first, 'int');
+     settype($val_last, 'int');
+-    if ($val_last < $val_first && $PASSO > 0) { // counter pass over
+-        $val_last += $PASSO;
++    if ($val_last < $val_first && $passomn > 0) { // counter pass over
++        $val_last += $passomn;
+     }
+     $CONSUMED_WHD = $val_last-$val_first; // Daily energy Consumption
+ }else {
+@@ -62,8 +60,8 @@
+     if ($diffTime >= 300) {
+         settype($first_array[$metnum], 'int');
+         settype($last_array[$metnum], 'int');
+-        if ($last_array[$metnum] < $prev_array[$metnum] && $PASSO > 0) { // counter just pass over
+-            $last_array[$metnum] += $PASSO;
++        if ($last_array[$metnum] < $prev_array[$metnum] && $passomn > 0) { // counter just pass over
++            $last_array[$metnum] += $passomn;
+         }
+         $CONSUMED_W = round((($last_array[$metnum] - $prev_array[$metnum]) * 3600) / $diffTime, 0); // Avg Power Consumption
+     } else {
+diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/read_maincfg.php 123solar_pdc-1.5.5-5/scripts/read_maincfg.php
+--- 123solar-1.5.5/scripts/read_maincfg.php	2013-07-28 17:28:28.000000000 +0200
++++ 123solar_pdc-1.5.5-5/scripts/read_maincfg.php	2015-04-23 14:25:40.000000000 +0200
+@@ -28,4 +28,14 @@
+ // ### CLEANUP
+ $KEEPDDAYS=$main_cfgarray[12];
+ $AMOUNTLOG=$main_cfgarray[13];
++
++// ### LOADS
++$RELAY_URL=$main_cfgarray[15];
++$LOADS_LIM=preg_split("/,/",$main_cfgarray[16]);
++$LOADS_HIS=preg_split("/,/",$main_cfgarray[17]);
++$LOADS_MIN=preg_split("/,/",$main_cfgarray[18]);
++$METER_URL=$main_cfgarray[19];
++$METER_TYPE=$main_cfgarray[20];
++$METER_SENSOR=$main_cfgarray[21];
++$LOADS_LABEL=preg_split("/,/",$main_cfgarray[22]);
+ ?>
