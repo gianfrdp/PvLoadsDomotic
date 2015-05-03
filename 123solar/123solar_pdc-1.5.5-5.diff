@@ -1,4 +1,4 @@
-diff -u -N -r -X diff_exclude 123solar-1.5.5/config/admin_main.php 123solar_pdc-1.5.5-5/config/admin_main.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/config/admin_main.php 123solar_pdc-1.5.5-5/config/admin_main.php
 --- 123solar-1.5.5/config/admin_main.php	2013-07-29 13:06:47.000000000 +0200
 +++ 123solar_pdc-1.5.5-5/config/admin_main.php	2015-04-23 14:35:32.000000000 +0200
 @@ -79,6 +79,8 @@
@@ -10,7 +10,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/config/admin_main.php 123solar_pdc-
  ?>
  ";
  fwrite($fh, $stringData);
-diff -u -N -r -X diff_exclude 123solar-1.5.5/config/config_main.php 123solar_pdc-1.5.5-5/config/config_main.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/config/config_main.php 123solar_pdc-1.5.5-5/config/config_main.php
 --- 123solar-1.5.5/config/config_main.php	2013-10-07 10:43:50.000000000 +0200
 +++ 123solar_pdc-1.5.5-5/config/config_main.php	2015-04-23 14:34:26.000000000 +0200
 @@ -20,4 +20,6 @@
@@ -20,7 +20,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/config/config_main.php 123solar_pdc
 +
 +include("config_main_loads.php");
  ?>
-diff -u -N -r -X diff_exclude 123solar-1.5.5/config/config_main_loads.php 123solar_pdc-1.5.5-5/config/config_main_loads.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/config/config_main_loads.php 123solar_pdc-1.5.5-5/config/config_main_loads.php
 --- 123solar-1.5.5/config/config_main_loads.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/config/config_main_loads.php	2015-04-29 09:59:52.000000000 +0200
 @@ -0,0 +1,21 @@
@@ -45,7 +45,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/config/config_main_loads.php 123sol
 +$METER_SENSOR = 'PDC1';
 +
 +?>
-diff -u -N -r -X diff_exclude 123solar-1.5.5/config/loadcfg.php 123solar_pdc-1.5.5-5/config/loadcfg.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/config/loadcfg.php 123solar_pdc-1.5.5-5/config/loadcfg.php
 --- 123solar-1.5.5/config/loadcfg.php	2013-09-17 20:25:34.000000000 +0200
 +++ 123solar_pdc-1.5.5-5/config/loadcfg.php	2015-04-23 14:25:24.000000000 +0200
 @@ -65,7 +65,7 @@
@@ -57,7 +57,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/config/loadcfg.php 123solar_pdc-1.5
  $shmid = shmop_open($systemid, 'c', 0666, 1024);
  shmop_write($shmid, $data, 0);
  shmop_close($shmid);
-diff -u -N -r -X diff_exclude 123solar-1.5.5/js_loads.php 123solar_pdc-1.5.5-5/js_loads.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/js_loads.php 123solar_pdc-1.5.5-5/js_loads.php
 --- 123solar-1.5.5/js_loads.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/js_loads.php	2015-04-23 14:25:40.000000000 +0200
 @@ -0,0 +1,40 @@
@@ -101,7 +101,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/js_loads.php 123solar_pdc-1.5.5-5/j
 +
 +};
 +
-diff -u -N -r -X diff_exclude 123solar-1.5.5/languages/Czech.php 123solar_pdc-1.5.5-5/languages/Czech.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/languages/Czech.php 123solar_pdc-1.5.5-5/languages/Czech.php
 --- 123solar-1.5.5/languages/Czech.php	2013-09-30 10:57:27.000000000 +0200
 +++ 123solar_pdc-1.5.5-5/languages/Czech.php	2015-04-29 11:37:56.000000000 +0200
 @@ -7,6 +7,7 @@
@@ -112,7 +112,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/languages/Czech.php 123solar_pdc-1.
  
  // ### FRONT PAGE
  $lgPOWERPLANT="Elektrárna";
-diff -u -N -r -X diff_exclude 123solar-1.5.5/languages/Deutsch.php 123solar_pdc-1.5.5-5/languages/Deutsch.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/languages/Deutsch.php 123solar_pdc-1.5.5-5/languages/Deutsch.php
 --- 123solar-1.5.5/languages/Deutsch.php	2013-09-30 10:56:23.000000000 +0200
 +++ 123solar_pdc-1.5.5-5/languages/Deutsch.php	2015-04-29 11:38:26.000000000 +0200
 @@ -7,6 +7,7 @@
@@ -123,7 +123,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/languages/Deutsch.php 123solar_pdc-
  
  // ### FRONT PAGE
  $lgPOWERPLANT="Kraftwerk";
-diff -u -N -r -X diff_exclude 123solar-1.5.5/languages/English.php 123solar_pdc-1.5.5-5/languages/English.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/languages/English.php 123solar_pdc-1.5.5-5/languages/English.php
 --- 123solar-1.5.5/languages/English.php	2013-09-30 10:54:17.000000000 +0200
 +++ 123solar_pdc-1.5.5-5/languages/English.php	2015-04-29 11:37:47.000000000 +0200
 @@ -7,6 +7,7 @@
@@ -134,7 +134,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/languages/English.php 123solar_pdc-
  
  // ### FRONT PAGE
  $lgPOWERPLANT="Power plant";
-diff -u -N -r -X diff_exclude 123solar-1.5.5/languages/Français.php 123solar_pdc-1.5.5-5/languages/Français.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/languages/Français.php 123solar_pdc-1.5.5-5/languages/Français.php
 --- 123solar-1.5.5/languages/Français.php	2013-09-30 10:53:42.000000000 +0200
 +++ 123solar_pdc-1.5.5-5/languages/Français.php	2015-04-29 11:38:34.000000000 +0200
 @@ -7,6 +7,7 @@
@@ -145,7 +145,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/languages/Français.php 123solar_pd
  
  // ### FRONT PAGE
  $lgPOWERPLANT="Centrale";
-diff -u -N -r -X diff_exclude 123solar-1.5.5/languages/Italiano.php 123solar_pdc-1.5.5-5/languages/Italiano.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/languages/Italiano.php 123solar_pdc-1.5.5-5/languages/Italiano.php
 --- 123solar-1.5.5/languages/Italiano.php	2013-09-30 10:58:41.000000000 +0200
 +++ 123solar_pdc-1.5.5-5/languages/Italiano.php	2015-04-29 11:38:45.000000000 +0200
 @@ -7,6 +7,7 @@
@@ -156,7 +156,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/languages/Italiano.php 123solar_pdc
  
  // ### FRONT PAGE
  $lgPOWERPLANT="Centrale elettrica";
-diff -u -N -r -X diff_exclude 123solar-1.5.5/languages/Nederlands.php 123solar_pdc-1.5.5-5/languages/Nederlands.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/languages/Nederlands.php 123solar_pdc-1.5.5-5/languages/Nederlands.php
 --- 123solar-1.5.5/languages/Nederlands.php	2013-09-30 10:59:11.000000000 +0200
 +++ 123solar_pdc-1.5.5-5/languages/Nederlands.php	2015-04-29 11:38:53.000000000 +0200
 @@ -7,6 +7,7 @@
@@ -167,7 +167,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/languages/Nederlands.php 123solar_p
  
  // ### FRONT PAGE
  $lgPOWERPLANT="Energiecentrale";
-diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/change_loads.php 123solar_pdc-1.5.5-5/programs/change_loads.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/programs/change_loads.php 123solar_pdc-1.5.5-5/programs/change_loads.php
 --- 123solar-1.5.5/programs/change_loads.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/programs/change_loads.php	2015-04-23 14:25:40.000000000 +0200
 @@ -0,0 +1,15 @@
@@ -187,7 +187,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/change_loads.php 123solar_
 +
 +?>
 \ No newline at end of file
-diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/meter_kw_status.php 123solar_pdc-1.5.5-5/programs/meter_kw_status.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/programs/meter_kw_status.php 123solar_pdc-1.5.5-5/programs/meter_kw_status.php
 --- 123solar-1.5.5/programs/meter_kw_status.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/programs/meter_kw_status.php	2015-04-23 14:25:40.000000000 +0200
 @@ -0,0 +1,7 @@
@@ -198,7 +198,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/meter_kw_status.php 123sol
 +meter_kw_status($METER_URL);
 +
 +?>
-diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/meter_kwh_status.php 123solar_pdc-1.5.5-5/programs/meter_kwh_status.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/programs/meter_kwh_status.php 123solar_pdc-1.5.5-5/programs/meter_kwh_status.php
 --- 123solar-1.5.5/programs/meter_kwh_status.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/programs/meter_kwh_status.php	2015-04-23 14:25:40.000000000 +0200
 @@ -0,0 +1,6 @@
@@ -208,7 +208,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/meter_kwh_status.php 123so
 +
 +meter_kwh_status($METER_URL);
 +?>
-diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/meter_status.php 123solar_pdc-1.5.5-5/programs/meter_status.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/programs/meter_status.php 123solar_pdc-1.5.5-5/programs/meter_status.php
 --- 123solar-1.5.5/programs/meter_status.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/programs/meter_status.php	2015-04-23 14:25:40.000000000 +0200
 @@ -0,0 +1,15 @@
@@ -227,7 +227,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/meter_status.php 123solar_
 +header("Content-type: text/json");
 +echo json_encode($ret)
 +?>
-diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/programdashboard.php 123solar_pdc-1.5.5-5/programs/programdashboard.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/programs/programdashboard.php 123solar_pdc-1.5.5-5/programs/programdashboard.php
 --- 123solar-1.5.5/programs/programdashboard.php	2013-09-21 20:29:49.000000000 +0200
 +++ 123solar_pdc-1.5.5-5/programs/programdashboard.php	2015-04-23 14:25:40.000000000 +0200
 @@ -7,7 +7,7 @@
@@ -248,7 +248,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/programdashboard.php 123so
  
  header("Content-type: text/json");  
  echo json_encode($ret);
-diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/programmultiday.php 123solar_pdc-1.5.5-5/programs/programmultiday.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/programs/programmultiday.php 123solar_pdc-1.5.5-5/programs/programmultiday.php
 --- 123solar-1.5.5/programs/programmultiday.php	2013-09-30 09:35:38.000000000 +0200
 +++ 123solar_pdc-1.5.5-5/programs/programmultiday.php	2015-04-23 14:25:40.000000000 +0200
 @@ -57,6 +57,7 @@
@@ -259,7 +259,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/programmultiday.php 123sol
              
              if ($line_num == 1) {
                  $pastline_num = 1;
-diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/read_loads.php 123solar_pdc-1.5.5-5/programs/read_loads.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/programs/read_loads.php 123solar_pdc-1.5.5-5/programs/read_loads.php
 --- 123solar-1.5.5/programs/read_loads.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/programs/read_loads.php	2015-04-23 14:25:40.000000000 +0200
 @@ -0,0 +1,12 @@
@@ -275,7 +275,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/programs/read_loads.php 123solar_pd
 +echo json_encode($LOADS_STATUS);
 +
 +?>
-diff -u -N -r -X diff_exclude 123solar-1.5.5/relays.php 123solar_pdc-1.5.5-5/relays.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/relays.php 123solar_pdc-1.5.5-5/relays.php
 --- 123solar-1.5.5/relays.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/relays.php	2015-04-23 14:25:40.000000000 +0200
 @@ -0,0 +1,501 @@
@@ -780,7 +780,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/relays.php 123solar_pdc-1.5.5-5/rel
 +</div>
 +
 +<?php include("styles/".$user_style."/footer.php"); ?>
-diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/debug_loads.php 123solar_pdc-1.5.5-5/scripts/debug_loads.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/scripts/debug_loads.php 123solar_pdc-1.5.5-5/scripts/debug_loads.php
 --- 123solar-1.5.5/scripts/debug_loads.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/scripts/debug_loads.php	2015-04-23 14:25:40.000000000 +0200
 @@ -0,0 +1,4 @@
@@ -789,7 +789,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/debug_loads.php 123solar_pd
 + ini_set("display_errors", 1);
 + include("fv_loads.php");?>
 \ No newline at end of file
-diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/debugmem_read.php 123solar_pdc-1.5.5-5/scripts/debugmem_read.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/scripts/debugmem_read.php 123solar_pdc-1.5.5-5/scripts/debugmem_read.php
 --- 123solar-1.5.5/scripts/debugmem_read.php	2013-09-17 20:23:00.000000000 +0200
 +++ 123solar_pdc-1.5.5-5/scripts/debugmem_read.php	2015-04-23 14:25:40.000000000 +0200
 @@ -123,9 +123,22 @@
@@ -817,7 +817,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/debugmem_read.php 123solar_
  for ($i = 1; $i <= $NUMINV; $i++) {
  $invtnum=$i;
  include("read_invtcfg.php"); //Load main constants
-diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/fv_loads.php 123solar_pdc-1.5.5-5/scripts/fv_loads.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/scripts/fv_loads.php 123solar_pdc-1.5.5-5/scripts/fv_loads.php
 --- 123solar-1.5.5/scripts/fv_loads.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/scripts/fv_loads.php	2015-04-23 14:25:40.000000000 +0200
 @@ -0,0 +1,169 @@
@@ -991,7 +991,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/fv_loads.php 123solar_pdc-1
 +echo "\n";
 +?>
 \ No newline at end of file
-diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/fv_loads0.php 123solar_pdc-1.5.5-5/scripts/fv_loads0.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/scripts/fv_loads0.php 123solar_pdc-1.5.5-5/scripts/fv_loads0.php
 --- 123solar-1.5.5/scripts/fv_loads0.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/scripts/fv_loads0.php	2015-04-23 14:25:40.000000000 +0200
 @@ -0,0 +1,94 @@
@@ -1090,7 +1090,147 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/fv_loads0.php 123solar_pdc-
 +echo "\n";
 +?>
 \ No newline at end of file
-diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/loads.php 123solar_pdc-1.5.5-5/scripts/loads.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/scripts/fv_loads1.php 123solar_pdc-1.5.5-5/scripts/fv_loads1.php
+--- 123solar-1.5.5/scripts/fv_loads1.php	1970-01-01 01:00:00.000000000 +0100
++++ 123solar_pdc-1.5.5-5/scripts/fv_loads1.php	2015-05-03 20:17:49.000000000 +0200
+@@ -0,0 +1,136 @@
++#!/usr/bin/php
++
++<?php
++include('read_maincfg.php');
++include_once('loads.php');
++include_once('loads_db.php');
++include_once('meter.php');
++
++$max_power = 0;
++
++for ($invt_num = 1; $invt_num <= $NUMINV; $invt_num++) {
++    $invtnum = $invt_num;
++    include("read_invtcfg.php");
++    $max_power = $max_power + $PLANT_POWER;
++    $systemid = "1231" . $invt_num;
++    @$shmid = shmop_open($systemid, "a", 0444, 256);
++    if (!empty($shmid)) {
++        $livedash[0] = shmop_read($shmid, 0, 256);
++        shmop_close($shmid);
++    } else {
++        $nowUTC      = strtotime(date("Ymd H:i:s"));
++        $livedash[0] = "$nowUTC,0,0,0,0,0,0,0,0,0,0,0,0,0,0";
++    }
++    $array = preg_split("/,/", $livedash[0]);
++
++    if (!isset($GPTOT)) {
++        $GPTOT = 0;
++    }
++    $array[9] *= $CORRECTFACTOR;
++    $GPTOT += $array[9];
++}
++
++// Produzione
++if ($GPTOT > 1000) {
++    $GPTOT = round($GPTOT, 0);
++} else {
++    $GPTOT = round($GPTOT, 1);
++}
++
++// Consumo
++$cons = read_meter_kw($METER_URL);
++echo "Comsumption = $cons\n";
++
++// Netto
++$NET = $GPTOT - $cons;
++
++$NUM_LOADS = count($LOADS_LIM);
++$LOADS_FORCE = array();
++$LOADS_STATUS = array();
++$LOADS_LAST_ON = array();
++
++for ($i = 0; $i < $NUM_LOADS; $i++) {
++    $LOADS_FORCE[$i] = get_status($i);
++    $LOADS_STATUS[$i] = read_load($RELAY_URL, $i);
++    $LOADS_LAST_ON[$i] = get_laston($i);
++}
++
++$date = date('Ymd_His');
++$now = time();
++$nowUTC = gmdate("Y-m-d H:i:s", $now);
++
++$power = $NET;
++
++if ($NET < 0) {
++    
++    // Lower production
++    for ($pin = $NUM_LOADS - 1; $pin >= 0; $pin--) {
++
++	    if ($LOADS_LAST_ON[$pin] > 0) {
++		$lastOn = gmdate("Y-m-d H:i:s", $LOADS_LAST_ON[$pin]);
++	    } else {
++		$lastOn = 0;
++	    }
++	
++	    echo "$pin - $LOADS_LABEL[$pin]: LOADS_FORCE = $LOADS_FORCE[$pin], LOADS_STATUS = $LOADS_STATUS[$pin], LOADS_LAST_ON = $lastOn, now = $nowUTC, LOADS_LIM = $LOADS_LIM[$pin], GPTOT = $GPTOT, NET = $NET, power = $power\n";
++	
++	    if ($LOADS_FORCE[$pin] == STATUS_FV) {
++		
++		    if (($power + $LOADS_HIS[$pin]) < 0 && strcmp($LOADS_STATUS[$pin], STATUS_ON) == 0) {
++			    $diff = round(abs($now - $LOADS_LAST_ON[$pin]) / 60, 2);
++			    if ($diff >= $LOADS_MIN[$pin]) {
++				    $power = $power + $LOADS_LIM[$pin];
++				    echo "Turning off $pin $LOADS_LABEL[$pin]\n";
++				    change_load($RELAY_URL, $pin, STATUS_OFF);
++				    save_laston($pin, 0);
++				    save_data($pin, $date, $NET, $LOADS_STATUS[$pin], STATUS_OFF, $LOADS_FORCE[$pin]);
++			    } else {
++				    echo "Waiting at least $LOADS_MIN[$pin] min before turning off $pin. Now $diff\n";
++			    }
++		    } else {
++			    echo "Nothing to do FV\n";
++			    save_data($pin, $date, $NET, $LOADS_STATUS[$pin], $LOADS_STATUS[$pin], $LOADS_FORCE[$pin]);
++		    }
++		
++	} else {
++		echo "Nothing to do\n";
++		save_data($pin, $date, $NET, $LOADS_STATUS[$pin], $LOADS_STATUS[$pin], $LOADS_FORCE[$pin]);
++	}
++    }
++} else {
++
++    // Higher production
++    for ($pin = 0; $pin < $NUM_LOADS; $pin++) {
++
++	    if ($LOADS_LAST_ON[$pin] > 0) {
++		$lastOn = gmdate("Y-m-d H:i:s", $LOADS_LAST_ON[$pin]);
++	    } else {
++		$lastOn = 0;
++	    }
++	
++	    echo "$pin - $LOADS_LABEL[$pin]: LOADS_FORCE = $LOADS_FORCE[$pin], LOADS_STATUS = $LOADS_STATUS[$pin], LOADS_LAST_ON = $lastOn, now = $nowUTC, LOADS_LIM = $LOADS_LIM[$pin], GPTOT = $GPTOT, NET = $NET, power = $power\n";
++	
++	    if ($LOADS_FORCE[$pin] == STATUS_FV) {
++		
++		    if ($power >= $LOADS_LIM[$pin] && strcmp($LOADS_STATUS[$pin], STATUS_OFF) == 0) {
++			    echo "Turning on $pin $LOADS_LABEL[$pin]\n";
++			    $power = $power - $LOADS_LIM[$pin];
++			    change_load($RELAY_URL, $pin, STATUS_ON);
++			    save_laston($pin, $now);
++			    save_data($pin, $date, $NET, $LOADS_STATUS[$pin], STATUS_ON, $LOADS_FORCE[$pin]);
++		    } else {
++			    echo "Nothing to do FV\n";
++			    save_data($pin, $date, $NET, $LOADS_STATUS[$pin], $LOADS_STATUS[$pin], $LOADS_FORCE[$pin]);
++		    }
++		
++	} else {
++		echo "Nothing to do\n";
++		save_data($pin, $date, $NET, $LOADS_STATUS[$pin], $LOADS_STATUS[$pin], $LOADS_FORCE[$pin]);
++	}
++    }
++
++}
++
++echo "\n";
++?>
++
+diff -u -r -N -X diff_exclude 123solar-1.5.5/scripts/loads.php 123solar_pdc-1.5.5-5/scripts/loads.php
 --- 123solar-1.5.5/scripts/loads.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/scripts/loads.php	2015-04-23 14:25:40.000000000 +0200
 @@ -0,0 +1,86 @@
@@ -1181,7 +1321,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/loads.php 123solar_pdc-1.5.
 +}
 +?>
 \ No newline at end of file
-diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/loads_db.php 123solar_pdc-1.5.5-5/scripts/loads_db.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/scripts/loads_db.php 123solar_pdc-1.5.5-5/scripts/loads_db.php
 --- 123solar-1.5.5/scripts/loads_db.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/scripts/loads_db.php	2015-04-23 14:25:40.000000000 +0200
 @@ -0,0 +1,96 @@
@@ -1282,7 +1422,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/loads_db.php 123solar_pdc-1
 +
 +?>
 \ No newline at end of file
-diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/meter.php 123solar_pdc-1.5.5-5/scripts/meter.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/scripts/meter.php 123solar_pdc-1.5.5-5/scripts/meter.php
 --- 123solar-1.5.5/scripts/meter.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/scripts/meter.php	2015-04-23 14:25:40.000000000 +0200
 @@ -0,0 +1,166 @@
@@ -1453,7 +1593,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/meter.php 123solar_pdc-1.5.
 +
 +?>
 \ No newline at end of file
-diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/protocols/sdm120c.php 123solar_pdc-1.5.5-5/scripts/protocols/sdm120c.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/scripts/protocols/sdm120c.php 123solar_pdc-1.5.5-5/scripts/protocols/sdm120c.php
 --- 123solar-1.5.5/scripts/protocols/sdm120c.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/scripts/protocols/sdm120c.php	2015-01-26 14:03:55.000000000 +0100
 @@ -0,0 +1,54 @@
@@ -1511,7 +1651,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/protocols/sdm120c.php 123so
 +//echo " $G1V \n $G1A \n $G1P \n $FRQ \n $EFF \n $KWHT\n";
 +
 +?>
-diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/protocols/sdm120c_checks.php 123solar_pdc-1.5.5-5/scripts/protocols/sdm120c_checks.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/scripts/protocols/sdm120c_checks.php 123solar_pdc-1.5.5-5/scripts/protocols/sdm120c_checks.php
 --- 123solar-1.5.5/scripts/protocols/sdm120c_checks.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/scripts/protocols/sdm120c_checks.php	2015-01-26 14:03:55.000000000 +0100
 @@ -0,0 +1,16 @@
@@ -1531,7 +1671,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/protocols/sdm120c_checks.ph
 +// unset no alarm $CMD_ALARM = "";
 +
 +?>
-diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/protocols/sdm120c_startup.php 123solar_pdc-1.5.5-5/scripts/protocols/sdm120c_startup.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/scripts/protocols/sdm120c_startup.php 123solar_pdc-1.5.5-5/scripts/protocols/sdm120c_startup.php
 --- 123solar-1.5.5/scripts/protocols/sdm120c_startup.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/scripts/protocols/sdm120c_startup.php	2015-01-26 14:03:55.000000000 +0100
 @@ -0,0 +1,4 @@
@@ -1539,7 +1679,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/protocols/sdm120c_startup.p
 +if(!defined('checkaccess')){die('Direct access not permitted');}
 +$CMD_INFO = "";
 +?>
-diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/pvoconsumption/meterNhousehold.php 123solar_pdc-1.5.5-5/scripts/pvoconsumption/meterNhousehold.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/scripts/pvoconsumption/meterNhousehold.php 123solar_pdc-1.5.5-5/scripts/pvoconsumption/meterNhousehold.php
 --- 123solar-1.5.5/scripts/pvoconsumption/meterNhousehold.php	2013-09-24 10:54:01.000000000 +0200
 +++ 123solar_pdc-1.5.5-5/scripts/pvoconsumption/meterNhousehold.php	2015-04-23 14:25:40.000000000 +0200
 @@ -3,12 +3,10 @@
@@ -1580,7 +1720,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/pvoconsumption/meterNhouseh
          }
          $CONSUMED_W = round((($last_array[$metnum] - $prev_array[$metnum]) * 3600) / $diffTime, 0); // Avg Power Consumption
      } else {
-diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/read_maincfg.php 123solar_pdc-1.5.5-5/scripts/read_maincfg.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/scripts/read_maincfg.php 123solar_pdc-1.5.5-5/scripts/read_maincfg.php
 --- 123solar-1.5.5/scripts/read_maincfg.php	2013-07-28 17:28:28.000000000 +0200
 +++ 123solar_pdc-1.5.5-5/scripts/read_maincfg.php	2015-04-23 14:25:40.000000000 +0200
 @@ -28,4 +28,14 @@
@@ -1598,7 +1738,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/scripts/read_maincfg.php 123solar_p
 +$METER_SENSOR=$main_cfgarray[21];
 +$LOADS_LABEL=preg_split("/,/",$main_cfgarray[22]);
  ?>
-diff -u -N -r -X diff_exclude 123solar-1.5.5/styles/personal/css/style.css 123solar_pdc-1.5.5-5/styles/personal/css/style.css
+diff -u -r -N -X diff_exclude 123solar-1.5.5/styles/personal/css/style.css 123solar_pdc-1.5.5-5/styles/personal/css/style.css
 --- 123solar-1.5.5/styles/personal/css/style.css	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/styles/personal/css/style.css	2015-04-29 11:34:44.000000000 +0200
 @@ -0,0 +1,41 @@
@@ -1643,7 +1783,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/styles/personal/css/style.css 123so
 +font-size: 10px;
 +box-shadow:2px 2px 3px rgba(0,0,0,0.2);
 +}
-diff -u -N -r -X diff_exclude 123solar-1.5.5/styles/personal/footer.php 123solar_pdc-1.5.5-5/styles/personal/footer.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/styles/personal/footer.php 123solar_pdc-1.5.5-5/styles/personal/footer.php
 --- 123solar-1.5.5/styles/personal/footer.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/styles/personal/footer.php	2015-04-29 11:34:44.000000000 +0200
 @@ -0,0 +1,4 @@
@@ -1651,7 +1791,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/styles/personal/footer.php 123solar
 +<p align=left><?php include("styles/selectstyles.php");?></p>
 +</body>
 +</html>
-diff -u -N -r -X diff_exclude 123solar-1.5.5/styles/personal/header.php 123solar_pdc-1.5.5-5/styles/personal/header.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/styles/personal/header.php 123solar_pdc-1.5.5-5/styles/personal/header.php
 --- 123solar-1.5.5/styles/personal/header.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/styles/personal/header.php	2015-04-29 11:36:36.000000000 +0200
 @@ -0,0 +1,10 @@
@@ -1665,7 +1805,7 @@ diff -u -N -r -X diff_exclude 123solar-1.5.5/styles/personal/header.php 123solar
 +</tr>
 +</table>
 +<!-- #BeginEditable "mainbox" -->
-diff -u -N -r -X diff_exclude 123solar-1.5.5/styles/personal/header_multi.php 123solar_pdc-1.5.5-5/styles/personal/header_multi.php
+diff -u -r -N -X diff_exclude 123solar-1.5.5/styles/personal/header_multi.php 123solar_pdc-1.5.5-5/styles/personal/header_multi.php
 --- 123solar-1.5.5/styles/personal/header_multi.php	1970-01-01 01:00:00.000000000 +0100
 +++ 123solar_pdc-1.5.5-5/styles/personal/header_multi.php	2015-04-29 11:36:25.000000000 +0200
 @@ -0,0 +1,17 @@
