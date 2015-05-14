@@ -18,52 +18,36 @@ if (!empty($shmid) && isset($output[0])) {
     $live = json_decode($memdata, true);
     shmop_close($shmid);
 
-    $array = array();
-    for ($i = 1; $i <= $NUMMETER; $i++) {
-        include("../config/config_met$i.php");
+    //echo "MEMORY = $MEMORY\n";
+    @$shmid = shmop_open($MEMORY, 'a', 0, 0);
+    if (!empty($shmid)) {
+        $size = shmop_size($shmid);
+        shmop_close($shmid);
+        $shmid = shmop_open($MEMORY, 'c', 0644, $size);
+        $memdata  = shmop_read($shmid, 0, $size);
+        $memory = json_decode($memdata, true);
+        shmop_close($shmid);
 
-        if (${'TYPE' . $i} != 'Sensor') {
-            $file       = file($output[0]);
-            $month      = substr($output[0], -8, 2);
-            $day        = substr($output[0], -6, 2);
-            $contalines = count($file);
-            $prevarray  = preg_split('/,/', $file[1]);
-            $linearray  = preg_split('/,/', $file[$contalines - 1]);
+        $array = array();
 
-            $val_first = $prevarray[$i];
-            $val_last  = $linearray[$i];
-            settype($val_first, 'float');
-            settype($val_last, 'float');
+        //var_dump($memory);
+        $array = array();
+        for ($i = 1; $i <= $NUMMETER; $i++) {
+            include("../config/config_met$i.php");
 
             if (${'TYPE' . $i} == 'Elect') {
-                $val_tot = $val_last / 1000;
-                $val_tot = $val_last;
-            } else {
-                settype(${'PRECI' . $i}, 'integer');
-                $val_tot = $val_last;
-                $prefix  = '';
+                $val_mid = $memory["Midnight$i"];
+                settype($val_mid, 'integer');
+                //echo "val_mid $i: $val_mid\n";
+                $val_tot = $memory["Totalcounter$i"];
+                settype($val_tot, 'integer');
+                //echo "val_tot $i: $val_tot\n";
+                $val_today = $val_tot - $val_mid;
+                //echo "val_today $i: $val_today\n";
+                $val_today /= 1000;
+                $array["${'METNAME'.$i}$i"] = array("KW" => $live["${'METNAME'.$i}$i"], "KWH" => round($val_today,${'PRECI' . $i}));
             }
-        } else {
-            $val_tot  = 0;
-            $val_last = 0;
         }
-
-        $data["Totalcounter$i"] = $val_tot;
-
-        if ($val_first <= $val_last) {
-            $val_last -= $val_first;
-        } else { // counter pass over
-            $val_last += ${'PASSO' . $metnum} - $val_first;
-        }
-
-        if (${'TYPE' . $i} == 'Elect') {
-            $val_last /= 1000;
-        } else {
-            settype(${'PRECI' . $i}, 'integer');
-        }
-        $data["Dailycounter$i"] = $val_last;
-
-        $array["${'METNAME'.$i}$i"] = array("KW" => $live["${'METNAME'.$i}$i"], "KWH" => round($data["Dailycounter$i"],${'PRECI' . $i}));
     }
 } else {
     for ($i = 1; $i <= $NUMMETER; $i++) {
