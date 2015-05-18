@@ -27,7 +27,6 @@ if (!empty($_GET['cmd']) && is_numeric($_GET['cmd'])) {
 
 define('checkaccess', TRUE);
 include("$pathto123s/config/config_main.php");
-include("$pathto123s/scripts/memory.php");
 
 date_default_timezone_set($DTZ);
 
@@ -36,25 +35,25 @@ $KWHT = 0;
 if ($cmd == 2) {
 
     for ($i = 0; $i < count($invtnums); $i++) {
-        $invtnum = $invtnums[$i];
-        include("$pathto123s/config/config_invt$invtnum.php");
+	$invtnum = $invtnums[$i];
+	include("$pathto123s/config/config_invt$invtnum.php");
 
-        $dir    = $pathto123s . '/data/invt' . $invtnum . '/csv';
-        $output = glob($dir . "/*.csv");
-        sort($output);
-        $xdays = count($output);
-        if ($xdays > 1) {
-            $lastlog    = $output[$xdays - 1];
-            $lines      = file($lastlog);
-            $contalines = count($lines);
-            $array_last = preg_split('/,/', $lines[$contalines - 1]);
-
-            $KWHT       += round(($array_last[14] * ${'CORRECTFACTOR'} * 1000), 0); //in Wh
-        } else {
-            $KWHT += 0;
-        }
+	$dir    = $pathto123s . '/data/invt' . $invtnum . '/csv';
+	$output = glob($dir . "/*.csv");
+	sort($output);
+	$xdays = count($output);
+	if ($xdays > 1) {
+	    $lastlog    = $output[$xdays - 1];
+	    $lines      = file($lastlog);
+	    $contalines = count($lines);
+	    $array_last = preg_split('/,/', $lines[$contalines - 1]);
+	
+	    $KWHT       += round(($array_last[14] * ${'CORRECTFACTOR'} * 1000), 0); //in Wh
+	} else {
+	    $KWHT += 0;
+	}
     }
-
+    
     echo "$meterid($KWHT*Wh)\n";
 } elseif ($cmd == 1) {
 
