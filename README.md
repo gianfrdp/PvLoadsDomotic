@@ -8,6 +8,7 @@ It's based on 123solar 1.5.5 version for Production reading and can use differen
 - meterN (http://metern.org)
 - measureit (https://code.google.com/p/measureit/)
 - a modified version for Arduino Solar Meter (https://solarmeter.codeplex.com/)
+- Eastron SDM Modbus meter (https://github.com/gianfrdp/SDM120C)
 
 It uses WebIOPi to control GPIO (https://code.google.com/p/webiopi/), Redis (http://redis.io/) to store relays statues with PHP binding (https://github.com/phpredis/phpredis)
  
